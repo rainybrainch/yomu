@@ -19,7 +19,17 @@ const QUOTES = [
     coreLink: '核3 内向き凝縮 → 超重力源',
     date: '2026-05-11',
     tags: ['仙人', '凝縮', '核3', '重力'],
-    charTentative: 'hotoke'
+    charTentative: 'hotoke',
+    // 服牢365 2026 ver メタ
+    genre: '凝',
+    weekday: 'wed',
+    sin: '怠惰',
+    virtue: '勤勉',
+    state: 'sublimated',
+    calendarDate: '01-01',
+    month: 1,
+    version: '2026'
+
   },
   {
     id: 'q_20260511_002',
@@ -29,7 +39,17 @@ const QUOTES = [
     coreLink: '核3 内向き凝縮',
     date: '2026-05-11',
     tags: ['廃人', '特化', '核3', '革命'],
-    charTentative: 'gomydorod'
+    charTentative: 'gomydorod',
+    // 服牢365 2026 ver メタ
+    genre: '凝',
+    weekday: 'wed',
+    sin: '怠惰',
+    virtue: '勤勉',
+    state: 'sublimated',
+    calendarDate: '01-02',
+    month: 1,
+    version: '2026'
+
   },
   {
     id: 'q_20260511_003',
@@ -39,7 +59,17 @@ const QUOTES = [
     coreLink: '核1 創造性（世界を作り続ける）',
     date: '2026-05-11',
     tags: ['ハック', '全能感', '核1', '神視点'],
-    charTentative: 'ofuroni'
+    charTentative: 'ofuroni',
+    // 服牢365 2026 ver メタ
+    genre: '創',
+    weekday: 'mon',
+    sin: '傲慢',
+    virtue: '謙虚',
+    state: 'transit',
+    calendarDate: '01-03',
+    month: 1,
+    version: '2026'
+
   },
   {
     id: 'q_20260511_004',
@@ -49,7 +79,17 @@ const QUOTES = [
     coreLink: '思考スタイル（点と点は線になる）',
     date: '2026-05-11',
     tags: ['マクロ', 'ミクロ', '二項両立'],
-    charTentative: 'vinira'
+    charTentative: 'vinira',
+    // 服牢365 2026 ver メタ
+    genre: '化',
+    weekday: 'thu',
+    sin: '色欲',
+    virtue: '純潔',
+    state: 'sublimated',
+    calendarDate: '01-04',
+    month: 1,
+    version: '2026'
+
   },
   {
     id: 'q_20260511_005',
@@ -59,7 +99,17 @@ const QUOTES = [
     coreLink: '核3 + 核1',
     date: '2026-05-11',
     tags: ['諦めない', '継続', '才能の正体'],
-    charTentative: 'hotoke'
+    charTentative: 'hotoke',
+    // 服牢365 2026 ver メタ
+    genre: '凝',
+    weekday: 'wed',
+    sin: '怠惰',
+    virtue: '勤勉',
+    state: 'sublimated',
+    calendarDate: '01-05',
+    month: 1,
+    version: '2026'
+
   },
   {
     id: 'q_20260511_006',
@@ -69,7 +119,17 @@ const QUOTES = [
     coreLink: '核3',
     date: '2026-05-11',
     tags: ['才能vs実力', '積み重ね'],
-    charTentative: 'antaimelt'
+    charTentative: 'antaimelt',
+    // 服牢365 2026 ver メタ
+    genre: '凝',
+    weekday: 'wed',
+    sin: '怠惰',
+    virtue: '勤勉',
+    state: 'sublimated',
+    calendarDate: '01-06',
+    month: 1,
+    version: '2026'
+
   },
   {
     id: 'q_20260511_007',
@@ -79,7 +139,17 @@ const QUOTES = [
     coreLink: '核1 仙人の平穏 + 二項両立',
     date: '2026-05-11',
     tags: ['仙人', '土台', '二項両立'],
-    charTentative: 'hotoke'
+    charTentative: 'hotoke',
+    // 服牢365 2026 ver メタ
+    genre: '化',
+    weekday: 'thu',
+    sin: '色欲',
+    virtue: '純潔',
+    state: 'sublimated',
+    calendarDate: '01-07',
+    month: 1,
+    version: '2026'
+
   },
   {
     id: 'q_20260511_008',
@@ -89,7 +159,17 @@ const QUOTES = [
     coreLink: '核4 アナログ × デジタルのキメラ',
     date: '2026-05-11',
     tags: ['ぶっ飛び', '安定', '二項両立'],
-    charTentative: 'tenguno'
+    charTentative: 'tenguno',
+    // 服牢365 2026 ver メタ
+    genre: '化',
+    weekday: 'thu',
+    sin: '色欲',
+    virtue: '純潔',
+    state: 'sublimated',
+    calendarDate: '01-08',
+    month: 1,
+    version: '2026'
+
   },
   {
     id: 'q_20260511_009',
@@ -99,7 +179,17 @@ const QUOTES = [
     coreLink: '核3 牢に閉じこもって作り込み',
     date: '2026-05-11',
     tags: ['隠れて', '牢', '密造', '核3'],
-    charTentative: 'ofuroni'
+    charTentative: 'ofuroni',
+    // 服牢365 2026 ver メタ
+    genre: '凝',
+    weekday: 'wed',
+    sin: '怠惰',
+    virtue: '勤勉',
+    state: 'sublimated',
+    calendarDate: '01-09',
+    month: 1,
+    version: '2026'
+
   },
   {
     id: 'q_20260511_010',
@@ -109,7 +199,17 @@ const QUOTES = [
     coreLink: '核3',
     date: '2026-05-11',
     tags: ['ひたすら', '作業', '過程'],
-    charTentative: 'kawuru'
+    charTentative: 'kawuru',
+    // 服牢365 2026 ver メタ
+    genre: '凝',
+    weekday: 'wed',
+    sin: '怠惰',
+    virtue: '勤勉',
+    state: 'sublimated',
+    calendarDate: '01-10',
+    month: 1,
+    version: '2026'
+
   },
 
   // ↓ 32話追加から抽出（キャラ未配置） ↓
@@ -121,7 +221,17 @@ const QUOTES = [
     coreLink: '核3 内向き凝縮',
     date: '2026-05-11',
     tags: ['直感', '目利き', '感動', '蓄積', '核3'],
-    charTentative: null  // 未配置 ── 後で
+    charTentative: null,  // 未配置 ── 後で
+    // 服牢365 2026 ver メタ
+    genre: '凝',
+    weekday: 'wed',
+    sin: '怠惰',
+    virtue: '勤勉',
+    state: 'sublimated',
+    calendarDate: '01-11',
+    month: 1,
+    version: '2026'
+
   },
   {
     id: 'q_20260511_012',
@@ -131,7 +241,17 @@ const QUOTES = [
     coreLink: '核3',
     date: '2026-05-11',
     tags: ['目利き', '慧眼', '見続ける', '核3'],
-    charTentative: null  // 未配置 ── 後で
+    charTentative: null,  // 未配置 ── 後で
+    // 服牢365 2026 ver メタ
+    genre: '凝',
+    weekday: 'wed',
+    sin: '怠惰',
+    virtue: '勤勉',
+    state: 'sublimated',
+    calendarDate: '01-12',
+    month: 1,
+    version: '2026'
+
   },
 
   // ↓ 32話追加(3度目) ── 創作の最深部の動機 ↓
@@ -143,7 +263,17 @@ const QUOTES = [
     coreLink: '核1 創造性 × 核5 利他的な愛と大団円',
     date: '2026-05-11',
     tags: ['創作', '贈り物', '動機', '核1', '核5', '神視点の裏側'],
-    charTentative: null
+    charTentative: null,
+    // 服牢365 2026 ver メタ
+    genre: '贈',
+    weekday: 'fri',
+    sin: '強欲',
+    virtue: '慈悲',
+    state: 'sublimated',
+    calendarDate: '01-13',
+    month: 1,
+    version: '2026'
+
   },
   {
     id: 'q_20260511_014',
@@ -153,7 +283,17 @@ const QUOTES = [
     coreLink: '核5 自己愛 ＋ 思考スタイル',
     date: '2026-05-11',
     tags: ['反省', '成長', '自己観察', '視野'],
-    charTentative: null
+    charTentative: null,
+    // 服牢365 2026 ver メタ
+    genre: '問',
+    weekday: 'sat',
+    sin: '暴食',
+    virtue: '節制',
+    state: 'sublimated',
+    calendarDate: '01-14',
+    month: 1,
+    version: '2026'
+
   },
   {
     id: 'q_20260511_015',
@@ -163,7 +303,17 @@ const QUOTES = [
     coreLink: '核3 内向き凝縮 → 超重力源',
     date: '2026-05-11',
     tags: ['ミクロ', 'マクロ', '積み重ね', '365日', '核3'],
-    charTentative: null
+    charTentative: null,
+    // 服牢365 2026 ver メタ
+    genre: '凝',
+    weekday: 'wed',
+    sin: '怠惰',
+    virtue: '勤勉',
+    state: 'sublimated',
+    calendarDate: '01-15',
+    month: 1,
+    version: '2026'
+
   },
   {
     id: 'q_20260511_016',
@@ -173,7 +323,17 @@ const QUOTES = [
     coreLink: '核1 創造性 ＋ 大人の所有理解',
     date: '2026-05-11',
     tags: ['譲与', '貸与', '所有', '大人', '創作の手放し方'],
-    charTentative: null
+    charTentative: null,
+    // 服牢365 2026 ver メタ
+    genre: '贈',
+    weekday: 'fri',
+    sin: '強欲',
+    virtue: '慈悲',
+    state: 'sublimated',
+    calendarDate: '01-16',
+    month: 1,
+    version: '2026'
+
   },
 
   // ↓ 32話追加4 ── 5本柱完全網羅（核2 初発掘） ↓
@@ -185,7 +345,17 @@ const QUOTES = [
     coreLink: '核1 創造性 ＋ 核5 利他的な愛',
     date: '2026-05-11',
     tags: ['目的', '生きる理由', '野原ひろし', '創作者の強さ', '日常の儀式'],
-    charTentative: null
+    charTentative: null,
+    // 服牢365 2026 ver メタ
+    genre: '行',
+    weekday: 'sun',
+    sin: '憤怒',
+    virtue: '忍耐',
+    state: 'sublimated',
+    calendarDate: '01-17',
+    month: 1,
+    version: '2026'
+
   },
   {
     id: 'q_20260511_018',
@@ -195,7 +365,17 @@ const QUOTES = [
     coreLink: '核2 重力／引力の物理法則 ★ 初発掘',
     date: '2026-05-11',
     tags: ['労働者vs資本家', '磁力', '善悪二元論の否定', '核2'],
-    charTentative: null
+    charTentative: null,
+    // 服牢365 2026 ver メタ
+    genre: '引',
+    weekday: 'tue',
+    sin: '嫉妬',
+    virtue: '親切',
+    state: 'sublimated',
+    calendarDate: '01-18',
+    month: 1,
+    version: '2026'
+
   },
   {
     id: 'q_20260511_019',
@@ -205,7 +385,17 @@ const QUOTES = [
     coreLink: '思考スタイル + 核1',
     date: '2026-05-11',
     tags: ['マクロ', '長期視点', '不安への答え', '5年'],
-    charTentative: null
+    charTentative: null,
+    // 服牢365 2026 ver メタ
+    genre: '引',
+    weekday: 'tue',
+    sin: '嫉妬',
+    virtue: '親切',
+    state: 'transit',
+    calendarDate: '01-19',
+    month: 1,
+    version: '2026'
+
   },
   {
     id: 'q_20260511_020',
@@ -215,7 +405,17 @@ const QUOTES = [
     coreLink: '核1 仙人 ＋ 二項両立',
     date: '2026-05-11',
     tags: ['パフォーマンス', '見守り', '仙人', '二項両立', '前面と背面'],
-    charTentative: null
+    charTentative: null,
+    // 服牢365 2026 ver メタ
+    genre: '化',
+    weekday: 'thu',
+    sin: '色欲',
+    virtue: '純潔',
+    state: 'sublimated',
+    calendarDate: '01-20',
+    month: 1,
+    version: '2026'
+
   },
   {
     id: 'q_20260511_021',
@@ -225,7 +425,17 @@ const QUOTES = [
     coreLink: '核1 ＋ 核2',
     date: '2026-05-11',
     tags: ['資本家', '資産', '創作経済', '時間', '核2'],
-    charTentative: null
+    charTentative: null,
+    // 服牢365 2026 ver メタ
+    genre: '贈',
+    weekday: 'fri',
+    sin: '強欲',
+    virtue: '慈悲',
+    state: 'sublimated',
+    calendarDate: '01-21',
+    month: 1,
+    version: '2026'
+
   },
 
   // ↓ 32話追加5 ── 筋トレも創作サイド ↓
@@ -237,7 +447,17 @@ const QUOTES = [
     coreLink: '核4 アナログ × デジタル ＋ 核2 重力／引力',
     date: '2026-05-11',
     tags: ['筋トレ', '身体', '創作サイド', '資産', '核4', 'SASUKE'],
-    charTentative: null
+    charTentative: null,
+    // 服牢365 2026 ver メタ
+    genre: '化',
+    weekday: 'thu',
+    sin: '色欲',
+    virtue: '純潔',
+    state: 'sublimated',
+    calendarDate: '01-22',
+    month: 1,
+    version: '2026'
+
   },
 
   // ↓ 33話 ── 創作殉教仙人・両翼自作・読書完走 ↓
@@ -249,7 +469,17 @@ const QUOTES = [
     coreLink: '核4 アナログ × デジタル（両輪の本質） + 二項両立',
     date: '2026-05-11',
     tags: ['両翼', '片翼じゃ落ちる', '自作', '仙人', '核4', '二項両立'],
-    charTentative: null
+    charTentative: null,
+    // 服牢365 2026 ver メタ
+    genre: '化',
+    weekday: 'thu',
+    sin: '色欲',
+    virtue: '純潔',
+    state: 'sublimated',
+    calendarDate: '01-23',
+    month: 1,
+    version: '2026'
+
   },
   {
     id: 'q_20260511_024',
@@ -259,7 +489,17 @@ const QUOTES = [
     coreLink: '核3 内向き凝縮 ＋ 思考スタイル「点と点は線になる」',
     date: '2026-05-11',
     tags: ['読書', '完走', '振り返り', '構造化', '読雨'],
-    charTentative: null
+    charTentative: null,
+    // 服牢365 2026 ver メタ
+    genre: '行',
+    weekday: 'sun',
+    sin: '憤怒',
+    virtue: '忍耐',
+    state: 'sublimated',
+    calendarDate: '01-24',
+    month: 1,
+    version: '2026'
+
   },
   {
     id: 'q_20260511_025',
@@ -269,7 +509,17 @@ const QUOTES = [
     coreLink: '核1 創造性 ＋ 核5 利他的な愛 ＋ 二項両立',
     date: '2026-05-11',
     tags: ['創作殉教仙人', '殉教', '仙人', '両翼自作', '服牢井像', '理想像'],
-    charTentative: null
+    charTentative: null,
+    // 服牢365 2026 ver メタ
+    genre: '創',
+    weekday: 'mon',
+    sin: '傲慢',
+    virtue: '謙虚',
+    state: 'sublimated',
+    calendarDate: '01-25',
+    month: 1,
+    version: '2026'
+
   },
 
   // ↓ 33話追加 ── 読書 → 行動衝動への変換 ↓
@@ -281,7 +531,17 @@ const QUOTES = [
     coreLink: '核1 創造性 + 核3 内向き凝縮（読書も凝縮の一形態）',
     date: '2026-05-11',
     tags: ['読書', '感想', '行動衝動', '読雨', '服牢365', '変換装置'],
-    charTentative: null
+    charTentative: null,
+    // 服牢365 2026 ver メタ
+    genre: '行',
+    weekday: 'sun',
+    sin: '憤怒',
+    virtue: '忍耐',
+    state: 'sublimated',
+    calendarDate: '01-26',
+    month: 1,
+    version: '2026'
+
   },
   {
     id: 'q_20260511_027',
@@ -291,7 +551,59 @@ const QUOTES = [
     coreLink: '核3 内向き凝縮（経験の蓄積）',
     date: '2026-05-11',
     tags: ['再開', '深化', '過去経験', '理想', '積み重ね'],
-    charTentative: null
+    charTentative: null,
+    // 服牢365 2026 ver メタ
+    genre: '凝',
+    weekday: 'wed',
+    sin: '怠惰',
+    virtue: '勤勉',
+    state: 'sublimated',
+    calendarDate: '01-27',
+    month: 1,
+    version: '2026'
+
+  },
+
+  // ↓ Elona プレイ第1セッション（殉教世界プレイン Lv5・25分） ↓
+  {
+    id: 'q_20260511_028',
+    quote: 'プレイヤー名は、自分の理想を凝縮した儀式である。',
+    explanation: '「殉教世界プレイン」── 殉教（信念献身）× 世界（神視点）× プレイン（領域）。Elona キャラの命名は、創造主の理想自我を身体化する儀式。名前を付ける行為自体が、自分の核を再確認する祈り。',
+    source: 'Elona プレイ感想（2026-05-11 / プレイヤー名「殉教世界プレイン」）',
+    coreLink: '核1 創造性 ＋ 33話「創作殉教仙人」',
+    date: '2026-05-11',
+    tags: ['命名', '殉教世界プレイン', '理想自我', '儀式', 'Elona', '創作殉教仙人'],
+    charTentative: null,
+    // 服牢365 2026 ver メタ
+    genre: '創',
+    weekday: 'mon',
+    sin: '傲慢',
+    virtue: '謙虚',
+    state: 'sublimated',
+    calendarDate: '01-28',
+    month: 1,
+    version: '2026'
+
+  },
+  {
+    id: 'q_20260511_029',
+    quote: 'ポモドーロで遊んで、読雨で感想を書く。それが創作殉教仙人の正しいリズム。',
+    explanation: '25分集中してやって、5分振り返って書く。「遊びすぎ」は構造的に防げる。時間管理 × 振り返り装置 = 廃人ペースの正しい運用。Elona も SS も筋トレも、同じリズムに乗る。',
+    source: 'Elona プレイ感想（2026-05-11 / 25分セッション後の運用ルール発明）',
+    coreLink: '核3 内向き凝縮（時間も凝縮の対象）',
+    date: '2026-05-11',
+    tags: ['ポモドーロ', '読雨', '時間管理', '振り返り', 'リズム', '創作殉教仙人'],
+    charTentative: null,
+    // 服牢365 2026 ver メタ
+    genre: '行',
+    weekday: 'sun',
+    sin: '憤怒',
+    virtue: '忍耐',
+    state: 'sublimated',
+    calendarDate: '01-29',
+    month: 1,
+    version: '2026'
+
   }
 
   // ↓ 「名言」と言われたら、ここに私が追記していく ↓

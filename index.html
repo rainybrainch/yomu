@@ -87,8 +87,47 @@ main { max-width: 720px; margin: 0 auto; }
 .quote-card {
   background: linear-gradient(135deg, rgba(26,36,64,0.7), rgba(19,28,51,0.7));
   border-left: 3px solid var(--soft); border-radius: 4px;
-  padding: 14px;
+  padding: 14px; transition: all 0.15s;
 }
+.quote-card.state-fallen     { border-left-color: var(--hp); opacity: 0.78; }
+.quote-card.state-transit    { border-left-color: var(--gold); }
+.quote-card.state-sublimated { border-left-color: var(--gold); box-shadow: 0 0 8px rgba(201,168,76,0.18); }
+
+.quote-card .q-header {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
+  margin-bottom: 8px; font-family: var(--mono); font-size: 0.62rem; color: var(--muted);
+}
+.quote-card .q-header .q-cal { color: var(--soft); font-weight: 700; letter-spacing: 0.1em; }
+.quote-card .q-genre-badge {
+  display: inline-block; padding: 2px 10px; border-radius: 12px;
+  font-family: var(--serif); font-size: 0.72rem; font-weight: 900;
+  letter-spacing: 0.05em;
+}
+.quote-card .q-genre-創 { background: rgba(255,107,107,0.18); color: #ff8e8e; }
+.quote-card .q-genre-引 { background: rgba(255,154,76,0.18);  color: #ffb87a; }
+.quote-card .q-genre-凝 { background: rgba(201,168,76,0.18);  color: #d6b966; }
+.quote-card .q-genre-化 { background: rgba(107,255,149,0.18); color: #9bff bf; }
+.quote-card .q-genre-贈 { background: rgba(107,182,255,0.18); color: #93c8ff; }
+.quote-card .q-genre-問 { background: rgba(124,58,237,0.25);  color: #b59cf3; }
+.quote-card .q-genre-行 { background: rgba(200,144,216,0.18); color: #d6a6e3; }
+
+.quote-card .sin-virtue {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--mono); font-size: 0.72rem;
+  padding: 7px 11px; margin: 10px 0 6px;
+  background: rgba(0,0,0,0.28); border-radius: 3px;
+  flex-wrap: wrap;
+}
+.quote-card .sin-virtue .sin    { color: var(--hp);   font-weight: 700; }
+.quote-card .sin-virtue .arrow  { color: var(--muted); opacity: 0.7; }
+.quote-card .sin-virtue .virtue { color: var(--gold); font-weight: 700; }
+.quote-card .sin-virtue .state-tag {
+  margin-left: auto; font-size: 0.62rem; padding: 2px 8px; border-radius: 10px;
+  letter-spacing: 0.08em;
+}
+.quote-card .sin-virtue .state-fallen     { background: rgba(255,107,107,0.18); color: var(--hp); }
+.quote-card .sin-virtue .state-transit    { background: rgba(201,168,76,0.18);  color: var(--gold); }
+.quote-card .sin-virtue .state-sublimated { background: rgba(201,168,76,0.32);  color: var(--gold); font-weight: 700; }
 .quote-card .q-text {
   font-family: var(--serif); font-size: 1.0rem; color: var(--white);
   font-weight: 700; line-height: 1.6;
@@ -391,15 +430,25 @@ main { max-width: 720px; margin: 0 auto; }
     </div>
 
     <div class="field">
-      <label>核（柱）── 服牢AI 5本柱との連結</label>
-      <select id="fq-core">
+      <label>七大罪 → 七徳（服牢365 2026 ver）</label>
+      <select id="fq-sv">
         <option value="">（未分類）</option>
-        <option value="核1 創造性">核1 ── 創造性</option>
-        <option value="核2 重力と引力の物理法則">核2 ── 重力と引力の物理法則</option>
-        <option value="核3 内向き凝縮 → 超重力源">核3 ── 内向き凝縮 → 超重力源</option>
-        <option value="核4 アナログ × デジタルのキメラ">核4 ── アナログ × デジタルのキメラ</option>
-        <option value="核5 利他的な愛と大団円">核5 ── 利他的な愛と大団円</option>
-        <option value="複合">複合（複数の核にまたがる）</option>
+        <option value="傲慢|謙虚|創">月 創 ── 傲慢 → 謙虚（核1 創造）</option>
+        <option value="嫉妬|親切|引">火 引 ── 嫉妬 → 親切（核2 引力）</option>
+        <option value="怠惰|勤勉|凝">水 凝 ── 怠惰 → 勤勉（核3 凝縮）</option>
+        <option value="色欲|純潔|化">木 化 ── 色欲 → 純潔（核4 キメラ）</option>
+        <option value="強欲|慈悲|贈">金 贈 ── 強欲 → 慈悲（核5 利他）</option>
+        <option value="暴食|節制|問">土 問 ── 暴食 → 節制（自問）</option>
+        <option value="憤怒|忍耐|行">日 行 ── 憤怒 → 忍耐（実践）</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>磁力位置（state）</label>
+      <select id="fq-state">
+        <option value="sublimated">⭐ 昇華済（徳側に反転した）</option>
+        <option value="transit">🌗 途上（昇華中・自問中）</option>
+        <option value="fallen">⬇ 重力（まだ罪側）</option>
       </select>
     </div>
 
@@ -963,18 +1012,64 @@ function renderQuotes() {
   `;
 }
 
+// 服牢365 v2: 罪/徳/state を推定（明示フィールドなければ coreLink から類推）
+function deriveSinVirtue(q) {
+  // 明示優先
+  if (q.sin && q.virtue) {
+    return { sin: q.sin, virtue: q.virtue, state: q.state || 'transit', genre: q.genre || null, weekday: q.weekday || null };
+  }
+  // coreLink から推定
+  const link = (q.coreLink || '').trim();
+  const map = [
+    { re: /核1|創造性/, sin: '傲慢', virtue: '謙虚', genre: '創', weekday: 'mon' },
+    { re: /核2|引力|磁力|物理法則/, sin: '嫉妬', virtue: '親切', genre: '引', weekday: 'tue' },
+    { re: /核3|凝縮|内向き/, sin: '怠惰', virtue: '勤勉', genre: '凝', weekday: 'wed' },
+    { re: /核4|キメラ|アナログ|二項両立/, sin: '色欲', virtue: '純潔', genre: '化', weekday: 'thu' },
+    { re: /核5|利他|大団円|贈与/, sin: '強欲', virtue: '慈悲', genre: '贈', weekday: 'fri' },
+    { re: /自問|問い/, sin: '暴食', virtue: '節制', genre: '問', weekday: 'sat' },
+    { re: /実践|日々/, sin: '憤怒', virtue: '忍耐', genre: '行', weekday: 'sun' }
+  ];
+  for (const m of map) {
+    if (m.re.test(link)) return { sin: m.sin, virtue: m.virtue, state: q.state || 'transit', genre: m.genre, weekday: m.weekday };
+  }
+  return { sin: null, virtue: null, state: q.state || null, genre: null, weekday: null };
+}
+
 function buildQuoteCard(q) {
   const tags = (q.tags || []).map(t => `<span>#${escape(t)}</span>`).join('');
   const meta = [];
   if (q.coreLink) meta.push(`<span class="q-core">${escape(q.coreLink)}</span>`);
-  if (q.char) meta.push(`<span class="q-char">${escape(q.char)}</span>`);
   if (q.source) meta.push(`<span>${escape(q.source)}</span>`);
-  if (q.date) meta.push(`<span>${escape(q.date)}</span>`);
   const isDraft = !!q.is_draft;
   const stageMark = isDraft ? ' <span style="color:var(--muted);font-size:0.62rem;">✏ 仮</span>' : '';
+
+  // 服牢365 v2: 罪/徳/state/genre
+  const sv = deriveSinVirtue(q);
+  const stateClass = sv.state ? 'state-' + sv.state : '';
+  const dateStr = q.calendarDate || q.date || '';
+  const genreBadge = sv.genre
+    ? `<span class="q-genre-badge q-genre-${sv.genre}">${sv.genre}</span>`
+    : '';
+  const headerHtml = (dateStr || sv.genre)
+    ? `<div class="q-header">
+         <span class="q-cal">${escape(dateStr)}</span>
+         ${genreBadge}
+       </div>`
+    : '';
+  const sinVirtueHtml = (sv.sin && sv.virtue)
+    ? `<div class="sin-virtue">
+         <span class="sin">${escape(sv.sin)}</span>
+         <span class="arrow">─→</span>
+         <span class="virtue">${escape(sv.virtue)}</span>
+         ${sv.state ? `<span class="state-tag state-${sv.state}">${sv.state === 'sublimated' ? '⭐ 昇華' : sv.state === 'transit' ? '🌗 途上' : '⬇ 重力'}</span>` : ''}
+       </div>`
+    : '';
+
   return `
-    <div class="quote-card">
+    <div class="quote-card ${stateClass}">
+      ${headerHtml}
       <div class="q-text">${escape(q.quote || '')}${stageMark}</div>
+      ${sinVirtueHtml}
       <div class="q-meta">${meta.join('')}</div>
       ${q.explanation ? `<div class="q-explain">${escape(q.explanation)}</div>` : ''}
       ${tags ? `<div class="q-tags">${tags}</div>` : ''}
@@ -1005,7 +1100,8 @@ function setAllCoreToggles(collapsed) {
 // ═══════════════════════════════════════════════════
 function openQuoteAdd() {
   document.getElementById('fq-quote').value = '';
-  document.getElementById('fq-core').value = '';
+  const sv = document.getElementById('fq-sv'); if (sv) sv.value = '';
+  const st = document.getElementById('fq-state'); if (st) st.value = 'sublimated';
   document.getElementById('fq-source').value = '';
   document.getElementById('fq-explain').value = '';
   document.getElementById('fq-tags').value = '';
@@ -1018,7 +1114,18 @@ function closeQuoteAdd() {
 function saveQuote() {
   const quote = document.getElementById('fq-quote').value.trim();
   if (!quote) { toast('名言は必須'); return; }
-  const core = document.getElementById('fq-core').value;
+  // 服牢365 v2: 罪|徳|字
+  const svRaw = document.getElementById('fq-sv').value;
+  let sin = null, virtue = null, genre = null, weekday = null, coreLink = null;
+  if (svRaw) {
+    const [s, v, g] = svRaw.split('|');
+    sin = s; virtue = v; genre = g;
+    const wkMap = { '創':'mon','引':'tue','凝':'wed','化':'thu','贈':'fri','問':'sat','行':'sun' };
+    weekday = wkMap[g] || null;
+    const coreMap = { '創':'核1 創造性','引':'核2 重力と引力の物理法則','凝':'核3 内向き凝縮 → 超重力源','化':'核4 アナログ × デジタルのキメラ','贈':'核5 利他的な愛と大団円','問':'自問','行':'実践' };
+    coreLink = coreMap[g] || null;
+  }
+  const state = document.getElementById('fq-state').value || 'sublimated';
   const source = document.getElementById('fq-source').value.trim();
   const explanation = document.getElementById('fq-explain').value.trim();
   const tagsRaw = document.getElementById('fq-tags').value.trim();
@@ -1028,16 +1135,17 @@ function saveQuote() {
   STATE.quotes.unshift({
     id: 'q_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
     quote, char: null, source: source || undefined,
-    coreLink: core || undefined,
+    coreLink: coreLink || undefined,
     explanation: explanation || undefined,
     date: today, tags: tags.length ? tags : undefined,
+    sin, virtue, state, genre, weekday, version: '2026',
     createdAt: now, updatedAt: now,
     is_draft: false
   });
   save();
   closeQuoteAdd();
   renderQuotes();
-  toast('⭐ 刻みました');
+  toast('⭐ 刻みました（' + (sin || '?') + '→' + (virtue || '?') + '）');
   YOMU.sync.pushGist();
 }
 
@@ -1154,11 +1262,22 @@ YOMU.sync.fetchGist();
   const explanation = (p.get('explain') || '').slice(0, 800) || null;
   const tagsRaw = (p.get('tags') || '').trim();
   const tags = tagsRaw ? tagsRaw.split(',').map(s => s.trim()).filter(Boolean).slice(0, 20) : null;
+  // 服牢365 v2: 罪/徳/state
+  const sinValid = ['傲慢','嫉妬','怠惰','色欲','強欲','暴食','憤怒'];
+  const virtueValid = ['謙虚','親切','勤勉','純潔','慈悲','節制','忍耐'];
+  const stateValid = ['fallen','transit','sublimated'];
+  const sinRaw = (p.get('sin') || '').trim();
+  const virtueRaw = (p.get('virtue') || '').trim();
+  const stateRaw = (p.get('state') || '').trim();
+  const sin = sinValid.includes(sinRaw) ? sinRaw : null;
+  const virtue = virtueValid.includes(virtueRaw) ? virtueRaw : null;
+  const state = stateValid.includes(stateRaw) ? stateRaw : null;
   const now = new Date().toISOString();
   STATE.quotes.unshift({
     id: 'q_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
     quote, char, source, coreLink, explanation,
     date: now.slice(0, 10), tags,
+    sin, virtue, state, version: '2026',
     createdAt: now, updatedAt: now,
     is_draft: true  // URL 経由は必ず走り書き
   });
