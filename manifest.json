@@ -1,0 +1,26 @@
+{
+  "name": "読雨 ── 読書の研究",
+  "short_name": "読雨",
+  "description": "読んで、刻む。読書の感想が、線になる。",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#0c1426",
+  "background_color": "#0c1426",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192' viewBox='0 0 128 128'><rect width='128' height='128' rx='24' fill='%230c1426'/><line x1='34' y1='22' x2='28' y2='50' stroke='%236bb6ff' stroke-width='3' stroke-linecap='round' opacity='0.9'/><line x1='52' y1='18' x2='46' y2='44' stroke='%236bb6ff' stroke-width='3' stroke-linecap='round' opacity='0.7'/><line x1='72' y1='24' x2='66' y2='54' stroke='%236bb6ff' stroke-width='3' stroke-linecap='round' opacity='0.8'/><line x1='92' y1='20' x2='86' y2='48' stroke='%236bb6ff' stroke-width='3' stroke-linecap='round' opacity='0.6'/><rect x='28' y='60' width='72' height='48' rx='3' fill='%23131c33' stroke='%23c9a84c' stroke-width='2'/><line x1='64' y1='60' x2='64' y2='108' stroke='%23c9a84c' stroke-width='1.5' opacity='0.6'/><line x1='36' y1='72' x2='58' y2='72' stroke='%23c890d8' stroke-width='1.2' opacity='0.7'/><line x1='36' y1='80' x2='56' y2='80' stroke='%23c890d8' stroke-width='1.2' opacity='0.5'/><line x1='36' y1='88' x2='58' y2='88' stroke='%23c890d8' stroke-width='1.2' opacity='0.6'/><line x1='70' y1='72' x2='90' y2='72' stroke='%23c890d8' stroke-width='1.2' opacity='0.7'/><line x1='70' y1='80' x2='92' y2='80' stroke='%23c890d8' stroke-width='1.2' opacity='0.5'/></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 128 128'><rect width='128' height='128' rx='24' fill='%230c1426'/><line x1='34' y1='22' x2='28' y2='50' stroke='%236bb6ff' stroke-width='3' stroke-linecap='round' opacity='0.9'/><line x1='52' y1='18' x2='46' y2='44' stroke='%236bb6ff' stroke-width='3' stroke-linecap='round' opacity='0.7'/><line x1='72' y1='24' x2='66' y2='54' stroke='%236bb6ff' stroke-width='3' stroke-linecap='round' opacity='0.8'/><line x1='92' y1='20' x2='86' y2='48' stroke='%236bb6ff' stroke-width='3' stroke-linecap='round' opacity='0.6'/><rect x='28' y='60' width='72' height='48' rx='3' fill='%23131c33' stroke='%23c9a84c' stroke-width='2'/><line x1='64' y1='60' x2='64' y2='108' stroke='%23c9a84c' stroke-width='1.5' opacity='0.6'/><line x1='36' y1='72' x2='58' y2='72' stroke='%23c890d8' stroke-width='1.2' opacity='0.7'/><line x1='36' y1='80' x2='56' y2='80' stroke='%23c890d8' stroke-width='1.2' opacity='0.5'/><line x1='36' y1='88' x2='58' y2='88' stroke='%23c890d8' stroke-width='1.2' opacity='0.6'/><line x1='70' y1='72' x2='90' y2='72' stroke='%23c890d8' stroke-width='1.2' opacity='0.7'/><line x1='70' y1='80' x2='92' y2='80' stroke='%23c890d8' stroke-width='1.2' opacity='0.5'/></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

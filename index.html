@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0c1426">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="読雨">
+<link rel="manifest" href="manifest.json">
+<title>🌧 読雨 ── 読書の研究</title>
+<script src="entries.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0c1426; --bg2: #131c33; --panel: #1a2440;
+  --rain: #6bb6ff; --gold: #c9a84c; --soft: #c890d8;
+  --hp: #ff6b6b; --xp: #6bff95;
+  --text: #c8d0e8; --muted: #5a6890; --white: #eef2ff;
+  --serif: 'Noto Serif JP', serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: var(--serif); line-height: 1.7;
+  min-height: 100vh; padding: 16px 14px 80px;
+}
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, rgba(107,182,255,0.4), transparent),
+    radial-gradient(1px 1px at 56% 32%, rgba(201,168,76,0.3), transparent),
+    radial-gradient(1px 1px at 78% 88%, rgba(200,144,216,0.3), transparent),
+    radial-gradient(1px 1px at 91% 14%, rgba(255,255,255,0.3), transparent);
+  opacity: 0.5;
+}
+#rain-canvas { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+main { max-width: 720px; margin: 0 auto; }
+
+/* ヘッダー */
+.head { text-align: center; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid rgba(107,182,255,0.2); }
+.title { font-size: 1.2rem; font-weight: 900; letter-spacing: 0.25em; color: var(--rain); }
+.subtitle { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); letter-spacing: 0.2em; margin-top: 4px; }
+.sync-line { font-family: var(--mono); font-size: 0.6rem; color: var(--muted); letter-spacing: 0.08em; margin-top: 6px; min-height: 1em; }
+.sync-line[data-state="ok"]      { color: var(--gold); }
+.sync-line[data-state="syncing"] { color: var(--rain); }
+.sync-line[data-state="offline"] { color: var(--soft); }
+.sync-line[data-state="error"]   { color: var(--hp); }
+
+/* メタ統計 */
+.meta { display: flex; justify-content: space-around; margin-bottom: 16px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 6px; border: 1px solid rgba(107,182,255,0.15); }
+.meta-item { text-align: center; flex: 1; }
+.meta-num { display: block; font-family: var(--mono); font-size: 1.2rem; font-weight: 900; color: var(--gold); }
+.meta-label { display: block; font-size: 0.6rem; color: var(--muted); letter-spacing: 0.1em; margin-top: 2px; }
+
+/* アクション */
+.actions { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.btn {
+  background: linear-gradient(135deg, var(--bg2), var(--panel));
+  border: 1px solid var(--rain); color: var(--rain);
+  padding: 10px 16px; border-radius: 4px; cursor: pointer;
+  font-family: inherit; font-weight: 700; font-size: 0.85rem;
+  letter-spacing: 0.05em; transition: all 0.15s; flex: 1; min-height: 40px;
+}
+.btn:hover, .btn:active { transform: translateY(-1px); background: var(--rain); color: var(--bg); }
+.btn.primary { background: linear-gradient(135deg, var(--rain), #4a8fcf); color: var(--bg); border-color: var(--rain); }
+.btn.danger { border-color: var(--hp); color: var(--hp); }
+.btn.danger:hover { background: var(--hp); color: var(--bg); }
+.btn.small { padding: 6px 10px; font-size: 0.7rem; min-height: auto; flex: 0; }
+
+/* カード */
+.entries { display: flex; flex-direction: column; gap: 10px; }
+.entry {
+  background: linear-gradient(135deg, rgba(26,36,64,0.7), rgba(19,28,51,0.7));
+  border-left: 3px solid var(--rain); border-radius: 4px;
+  padding: 14px; transition: transform 0.15s, box-shadow 0.15s;
+}
+.entry:hover { transform: translateX(2px); box-shadow: 0 4px 12px rgba(107,182,255,0.15); }
+.entry.is-draft { opacity: 0.80; border-left-color: var(--rain); }
+.entry.is-final { opacity: 1.00; border-left-color: var(--gold); }
+.entry .stage-mark { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; margin-left: 6px; }
+.entry.is-draft .stage-mark { color: var(--muted); }
+.entry.is-final .stage-mark { color: var(--gold); }
+.entry-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 6px; }
+.entry-title { color: var(--white); font-weight: 700; font-size: 1.0rem; line-height: 1.4; flex: 1; }
+.entry-stars { color: var(--gold); font-family: var(--mono); white-space: nowrap; font-size: 0.85rem; }
+.entry-meta { display: flex; gap: 8px; font-size: 0.6rem; color: var(--muted); font-family: var(--mono); margin-bottom: 8px; }
+.entry-body { font-size: 0.85rem; color: var(--text); line-height: 1.85; white-space: pre-wrap; }
+.entry-body em { color: var(--soft); font-style: normal; font-size: 0.7rem; letter-spacing: 0.05em; display: block; margin-top: 8px; padding-top: 6px; border-top: 1px dashed rgba(255,255,255,0.05); }
+.entry-actions { display: flex; gap: 6px; margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.05); }
+
+.empty { text-align: center; color: var(--muted); padding: 50px 20px; font-style: italic; font-size: 0.85rem; }
+
+/* オーバーレイ（追加・編集モーダル） */
+.overlay {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(7,9,15,0.92); backdrop-filter: blur(8px);
+  display: none; align-items: center; justify-content: center;
+  padding: 16px;
+}
+.overlay.show { display: flex; }
+.overlay-card {
+  max-width: 540px; width: 100%; max-height: 90vh; overflow-y: auto;
+  background: linear-gradient(135deg, var(--bg2), var(--panel));
+  border: 1.5px solid var(--rain); border-radius: 8px; padding: 20px;
+}
+.overlay-title { font-size: 1.1rem; font-weight: 900; color: var(--rain); letter-spacing: 0.15em; text-align: center; margin-bottom: 14px; }
+
+.field { margin-bottom: 12px; }
+.field label { display: block; font-size: 0.7rem; color: var(--muted); letter-spacing: 0.1em; margin-bottom: 4px; }
+.field input, .field textarea {
+  width: 100%; padding: 9px 12px;
+  background: rgba(0,0,0,0.4); color: var(--white);
+  border: 1px solid rgba(107,182,255,0.3); border-radius: 4px;
+  font-family: var(--serif); font-size: 0.9rem; line-height: 1.6;
+}
+.field input:focus, .field textarea:focus { outline: 2px solid var(--rain); outline-offset: 0; }
+.field textarea { min-height: 70px; resize: vertical; }
+
+.stars-input { display: flex; gap: 4px; }
+.stars-input button {
+  background: none; border: none; cursor: pointer;
+  font-size: 1.4rem; padding: 4px; color: var(--muted); transition: color 0.15s;
+}
+.stars-input button.active { color: var(--gold); }
+
+/* トースト */
+.toast {
+  position: fixed; top: 20px; right: 20px; z-index: 200;
+  background: rgba(45,45,90,0.95); color: var(--white);
+  padding: 10px 18px; border-radius: 8px; border-left: 3px solid var(--gold);
+  font-size: 0.78rem; box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  animation: toastIn 0.3s ease-out, toastOut 0.4s ease-in 2.6s forwards;
+}
+@keyframes toastIn { from{transform:translateX(120%);opacity:0} to{transform:translateX(0);opacity:1} }
+@keyframes toastOut { to{transform:translateX(120%);opacity:0} }
+
+@media (max-width: 480px) {
+  .actions { flex-direction: column; }
+  .btn { flex: none; }
+}
+</style>
+</head>
+<body>
+<canvas id="rain-canvas" aria-hidden="true"></canvas>
+
+<main>
+  <div class="head">
+    <div class="title">🌧 読雨</div>
+    <div class="subtitle">YOMU ／ 読書は研究である</div>
+    <div class="sync-line" id="sync-line" data-state="loading">読み込み中…</div>
+  </div>
+
+  <div class="meta" id="meta"></div>
+
+  <div class="actions">
+    <button class="btn primary" onclick="openAdd()">＋ 新しい雨を記録</button>
+    <button class="btn small" onclick="exportData()">📤 出力</button>
+    <button class="btn small" onclick="openConfig()">⚙ 設定</button>
+  </div>
+
+  <div class="entries" id="entries"></div>
+
+  <footer style="margin-top:36px;padding-top:14px;border-top:1px dashed rgba(107,182,255,0.15);text-align:center;font-family:var(--mono);font-size:0.62rem;color:var(--muted);letter-spacing:0.1em;line-height:1.8;">
+    読んで、刻む。<br>
+    <a href="https://rainybrainch.github.io/uiki/" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;">もう一本の川 ── UIKI（タスクの水循環）</a>
+  </footer>
+</main>
+
+<!-- 追加・編集モーダル -->
+<div class="overlay" id="overlay-add">
+  <div class="overlay-card">
+    <div class="overlay-title" id="modal-title">＋ 新しい雨</div>
+
+    <div class="field">
+      <label>📖 作品名（タイトル）</label>
+      <input type="text" id="f-title" placeholder="例：◯◯の二次創作 第27話" maxlength="120">
+    </div>
+
+    <div class="field">
+      <label>💧 刺さった ── 何が、どう、心に降ったか</label>
+      <textarea id="f-stuck" placeholder="一言でも、長文でも、自由に。"></textarea>
+    </div>
+
+    <div class="field">
+      <label>★ 評価</label>
+      <div class="stars-input" id="f-stars">
+        <button type="button" data-v="1">★</button>
+        <button type="button" data-v="2">★</button>
+        <button type="button" data-v="3">★</button>
+        <button type="button" data-v="4">★</button>
+        <button type="button" data-v="5">★</button>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn" onclick="saveEntry(true)" title="走り書きとして仮保存（後で清書できる）">✏ 投げる（仮）</button>
+      <button class="btn primary" onclick="saveEntry(false)" title="清書として刻む（重い）">⭐ 刻む</button>
+      <button class="btn" onclick="closeAdd()">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<!-- 設定モーダル -->
+<div class="overlay" id="overlay-config">
+  <div class="overlay-card">
+    <div class="overlay-title">⚙ 設定</div>
+    <div class="field">
+      <label>GitHub Personal Access Token（fine-grained / gist scope）</label>
+      <input type="password" id="cfg-pat" placeholder="github_pat_..." autocomplete="off">
+      <p style="font-size:0.7rem;color:var(--muted);margin-top:4px;line-height:1.5;">
+        PAT を入れると、複数端末で記録が同期される（Gist 経由・読雨専用 secret）。<br>
+        未設定でもアプリは動く（ローカル localStorage のみ）。
+      </p>
+    </div>
+    <div class="field">
+      <label>同期先 Gist ID</label>
+      <input type="text" id="cfg-gistid" value="cffc5abcf62103b27effe2efba25ca6a" readonly style="font-family:var(--mono);font-size:0.75rem;opacity:0.7;">
+    </div>
+    <div class="actions">
+      <button class="btn primary" onclick="saveConfig()">保存</button>
+      <button class="btn" onclick="closeConfig()">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// ─── 状態 ───
+const STATE = {
+  entries: [],         // [{id, title, stuck, stars, at, is_draft?, analysis?}]
+  editingId: null,
+  formStars: 0
+};
+const KEY = 'yomu_entries';
+const PAT_KEY = 'yomu_gist_pat';
+const ETAG_KEY = 'yomu_etag';
+const GIST_ID = 'cffc5abcf62103b27effe2efba25ca6a';
+
+// ─── 永続化 ───
+function load() {
+  try {
+    STATE.entries = JSON.parse(localStorage.getItem(KEY) || '[]');
+  } catch(e) { STATE.entries = []; }
+  // PRESET_ENTRIES（entries.js）から未取り込みのものをマージ
+  if (typeof window !== 'undefined' && Array.isArray(window.PRESET_ENTRIES)) {
+    const existingIds = new Set(STATE.entries.map(e => e.id));
+    for (const p of window.PRESET_ENTRIES) {
+      if (!existingIds.has(p.id)) {
+        // PRESET（entries.js）は analysis を持つ深い記録 → 清書扱い
+        STATE.entries.push({ ...p, is_draft: false });
+      }
+    }
+  }
+  // is_draft 既定値を補完（既存エントリは清書扱い・後方互換）
+  for (const e of STATE.entries) {
+    if (typeof e.is_draft === 'undefined') e.is_draft = false;
+  }
+  STATE.entries.sort((a, b) => (b.at || '').localeCompare(a.at || ''));
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(STATE.entries)); } catch(e){}
+}
+
+// ═══════════════════════════════════════════════════
+// 同期：Gist（fetch + ETag/304 + UNION マージ）
+// ═══════════════════════════════════════════════════
+const YOMU = { sync: null, dirty: false };
+YOMU.sync = (() => {
+  const apiBase = 'https://api.github.com/gists/';
+  function pat() { return localStorage.getItem(PAT_KEY) || null; }
+  function setStatus(state, text) {
+    const el = document.getElementById('sync-line');
+    if (!el) return;
+    el.dataset.state = state;
+    el.textContent = text || '';
+  }
+  async function fetchGist() {
+    const token = pat();
+    if (!token) { setStatus('offline', 'ローカル動作中（PAT 未設定）'); return; }
+    setStatus('syncing', '同期中…');
+    try {
+      const headers = { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' };
+      const etag = localStorage.getItem(ETAG_KEY);
+      if (etag) headers['If-None-Match'] = etag;
+      const r = await fetch(apiBase + GIST_ID, { headers, cache: 'no-store' });
+      if (r.status === 304) { setStatus('ok', '同期 OK（変更なし）'); return; }
+      if (!r.ok) { setStatus('error', '同期エラー: ' + r.status); return; }
+      const newEtag = r.headers.get('ETag');
+      if (newEtag) localStorage.setItem(ETAG_KEY, newEtag);
+      const data = await r.json();
+      const fileObj = data.files && data.files['yomu-data.json'];
+      if (!fileObj) { setStatus('error', 'yomu-data.json なし'); return; }
+      let remote;
+      try { remote = JSON.parse(fileObj.content); } catch (e) { setStatus('error', 'Gist パース失敗'); return; }
+      mergeRemote(remote);
+      setStatus('ok', '同期 OK ' + new Date().toLocaleTimeString('ja-JP'));
+    } catch (e) {
+      setStatus('error', '同期失敗（ネットワーク）');
+    }
+  }
+  function mergeRemote(remote) {
+    if (!remote || !Array.isArray(remote.entries)) return;
+    const map = new Map(STATE.entries.map(e => [e.id, e]));
+    let added = 0, updated = 0;
+    for (const r of remote.entries) {
+      if (!r || !r.id) continue;
+      const local = map.get(r.id);
+      if (!local) {
+        STATE.entries.push({ ...r, is_draft: typeof r.is_draft === 'undefined' ? false : r.is_draft });
+        added++;
+      } else {
+        const lU = local.updatedAt || local.at || '';
+        const rU = r.updatedAt || r.at || '';
+        if (rU > lU) {
+          Object.assign(local, r);
+          if (typeof local.is_draft === 'undefined') local.is_draft = false;
+          updated++;
+        }
+      }
+    }
+    STATE.entries.sort((a, b) => (b.at || '').localeCompare(a.at || ''));
+    save();
+    render();
+    if (added || updated) toast(`同期: +${added} 追加 / ${updated} 更新`);
+  }
+  async function pushGist() {
+    const token = pat();
+    if (!token) return;
+    setStatus('syncing', '保存中…');
+    try {
+      // 最新を取得してリモート優先でマージ済みなので、ローカル全件を Gist に書き戻す
+      const payload = {
+        files: {
+          'yomu-data.json': {
+            content: JSON.stringify({
+              version: 1,
+              updatedAt: new Date().toISOString(),
+              entries: STATE.entries
+            }, null, 2)
+          }
+        }
+      };
+      const r = await fetch(apiBase + GIST_ID, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Accept': 'application/vnd.github+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload),
+        cache: 'no-store'
+      });
+      if (!r.ok) { setStatus('error', '書込エラー: ' + r.status); return; }
+      const newEtag = r.headers.get('ETag');
+      if (newEtag) localStorage.setItem(ETAG_KEY, newEtag);
+      setStatus('ok', '書込 OK ' + new Date().toLocaleTimeString('ja-JP'));
+    } catch (e) {
+      setStatus('error', '書込失敗（ネットワーク）');
+    }
+  }
+  function markDirty() { YOMU.dirty = true; }
+  return { fetchGist, pushGist, markDirty };
+})();
+
+// ═══════════════════════════════════════════════════
+// 設定モーダル
+// ═══════════════════════════════════════════════════
+function openConfig() {
+  const cur = localStorage.getItem(PAT_KEY) || '';
+  document.getElementById('cfg-pat').value = cur;
+  document.getElementById('overlay-config').classList.add('show');
+}
+function closeConfig() {
+  document.getElementById('overlay-config').classList.remove('show');
+}
+function saveConfig() {
+  const pat = document.getElementById('cfg-pat').value.trim();
+  if (pat) localStorage.setItem(PAT_KEY, pat);
+  else localStorage.removeItem(PAT_KEY);
+  closeConfig();
+  toast('設定を保存');
+  YOMU.sync.fetchGist();
+}
+
+// ─── 操作 ───
+function openAdd(id) {
+  STATE.editingId = id || null;
+  STATE.formStars = 0;
+  if (id) {
+    const e = STATE.entries.find(x => x.id === id);
+    if (!e) return;
+    document.getElementById('f-title').value = e.title || '';
+    document.getElementById('f-stuck').value = e.stuck || '';
+    STATE.formStars = e.stars || 0;
+    document.getElementById('modal-title').textContent = '✎ 編集';
+  } else {
+    document.getElementById('f-title').value = '';
+    document.getElementById('f-stuck').value = '';
+    document.getElementById('modal-title').textContent = '＋ 新しい雨';
+  }
+  renderStars();
+  document.getElementById('overlay-add').classList.add('show');
+  setTimeout(() => document.getElementById('f-title').focus(), 100);
+}
+function closeAdd() {
+  document.getElementById('overlay-add').classList.remove('show');
+  STATE.editingId = null;
+}
+function saveEntry(asDraft) {
+  const title = document.getElementById('f-title').value.trim();
+  const stuck = document.getElementById('f-stuck').value.trim();
+  if (!title) { toast('作品名は必須'); return; }
+  // 清書時は一呼吸の摩擦（重力作品としての質量保持・RB 微調整 2）
+  if (asDraft === false) {
+    if (!confirm('刻みますか？\n清書は重い行為です。後で戻せません（編集はできます）。')) return;
+  }
+  const now = new Date().toISOString();
+  if (STATE.editingId) {
+    const e = STATE.entries.find(x => x.id === STATE.editingId);
+    if (e) {
+      e.title = title;
+      e.stuck = stuck;
+      e.stars = STATE.formStars;
+      e.updatedAt = now;
+      if (asDraft === false) e.is_draft = false;  // 仮 → 清書に昇格
+    }
+    toast(asDraft ? '走り書きを更新' : '⭐ 刻みました');
+  } else {
+    STATE.entries.unshift({
+      id: 'y_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+      title, stuck, stars: STATE.formStars,
+      at: now,
+      updatedAt: now,
+      is_draft: !!asDraft
+    });
+    toast(asDraft ? '✏ 投げました（仮）' : '⭐ 刻みました');
+  }
+  save();
+  closeAdd();
+  render();
+  YOMU.sync.pushGist();
+}
+function deleteEntry(id) {
+  if (!confirm('この記録を消す？（戻せません）')) return;
+  STATE.entries = STATE.entries.filter(e => e.id !== id);
+  save(); render();
+  toast('削除しました');
+}
+function setStars(v) {
+  STATE.formStars = (STATE.formStars === v) ? v - 1 : v;
+  if (STATE.formStars < 0) STATE.formStars = 0;
+  renderStars();
+}
+function renderStars() {
+  const btns = document.querySelectorAll('#f-stars button');
+  btns.forEach((b, i) => {
+    if (i < STATE.formStars) b.classList.add('active');
+    else b.classList.remove('active');
+  });
+}
+
+// ─── 描画 ───
+function render() {
+  // メタ統計
+  const total = STATE.entries.length;
+  const month = STATE.entries.filter(e => {
+    const d = new Date(e.at);
+    const now = new Date();
+    return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+  }).length;
+  const avgStars = total ? (STATE.entries.reduce((s,e) => s + (e.stars||0), 0) / total).toFixed(1) : '–';
+  document.getElementById('meta').innerHTML = `
+    <div class="meta-item"><span class="meta-num">${total}</span><span class="meta-label">総記録</span></div>
+    <div class="meta-item"><span class="meta-num">${month}</span><span class="meta-label">今月</span></div>
+    <div class="meta-item"><span class="meta-num">${avgStars}</span><span class="meta-label">平均★</span></div>
+  `;
+
+  // エントリ
+  const wrap = document.getElementById('entries');
+  if (STATE.entries.length === 0) {
+    wrap.innerHTML = '<div class="empty">まだ記録は降っていない。<br>読み終わったものを、3行でも、ここに残してみて。</div>';
+    return;
+  }
+  wrap.innerHTML = STATE.entries.map(e => {
+    const stars = '★'.repeat(e.stars||0) + '☆'.repeat(5 - (e.stars||0));
+    const date = e.at ? new Date(e.at).toLocaleDateString('ja-JP') : '';
+    const stuck = escape(e.stuck || '');
+    const analysis = escape(e.analysis || '');
+    const meta = [
+      date,
+      e.site || '',
+      e.chapter ? `第${e.chapter}話` : '',
+      e.url ? `<a href="${escape(e.url)}" target="_blank" rel="noopener" style="color:var(--rain);">▷ 開く</a>` : ''
+    ].filter(Boolean).join(' ／ ');
+    const tags = (e.tags||[]).map(t => `<span style="background:rgba(107,182,255,0.12);color:var(--rain);padding:1px 7px;border-radius:10px;font-size:0.6rem;font-family:var(--mono);">#${escape(t)}</span>`).join(' ');
+    const isDraft = !!e.is_draft;
+    const stageMark = isDraft
+      ? '<span class="stage-mark" title="走り書き（仮）">✏ 仮</span>'
+      : '<span class="stage-mark" title="清書（刻まれた）">⭐ 刻</span>';
+    return `
+      <div class="entry ${isDraft ? 'is-draft' : 'is-final'}">
+        <div class="entry-head">
+          <div class="entry-title">${escape(e.title)}${stageMark}</div>
+          <div class="entry-stars">${stars}</div>
+        </div>
+        <div class="entry-meta">${meta}</div>
+        ${tags ? `<div style="margin-bottom:8px;display:flex;flex-wrap:wrap;gap:4px;">${tags}</div>` : ''}
+        ${stuck ? `<div class="entry-body">${stuck}</div>` : ''}
+        ${analysis ? `<div class="entry-body" style="margin-top:10px;padding-top:8px;border-top:1px dashed rgba(255,255,255,0.06);color:var(--soft);font-size:0.8rem;">${analysis}</div>` : ''}
+        <div class="entry-actions">
+          <button class="btn small" onclick="openAdd('${e.id}')">✎ 編集</button>
+          <button class="btn small danger" onclick="deleteEntry('${e.id}')">🗑 削除</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+function escape(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// ─── トースト ───
+function toast(msg) {
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// ─── エクスポート ───
+function exportData() {
+  const blob = new Blob([JSON.stringify(STATE.entries, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'yomu_export_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('JSON 出力しました');
+}
+
+// ─── 雨アニメ ───
+function initRain() {
+  const c = document.getElementById('rain-canvas');
+  const ctx = c.getContext('2d');
+  function resize() { c.width = innerWidth; c.height = innerHeight; }
+  resize(); addEventListener('resize', resize);
+  const drops = Array.from({length:25}, () => ({
+    x: Math.random()*innerWidth, y: Math.random()*innerHeight,
+    speed: 1.5 + Math.random()*3, length: 8 + Math.random()*10
+  }));
+  function tick() {
+    ctx.clearRect(0,0,c.width,c.height);
+    ctx.strokeStyle = 'rgba(107,182,255,0.25)'; ctx.lineWidth = 1;
+    for (const d of drops) {
+      ctx.beginPath(); ctx.moveTo(d.x, d.y); ctx.lineTo(d.x, d.y + d.length); ctx.stroke();
+      d.y += d.speed;
+      if (d.y > c.height) { d.y = -d.length; d.x = Math.random()*c.width; }
+    }
+    requestAnimationFrame(tick);
+  }
+  tick();
+}
+
+// ─── イベント ───
+document.addEventListener('click', (ev) => {
+  const overlay = document.getElementById('overlay-add');
+  if (ev.target === overlay) closeAdd();
+});
+document.querySelectorAll('#f-stars button').forEach(b => {
+  b.addEventListener('click', () => setStars(parseInt(b.dataset.v, 10)));
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.getElementById('overlay-add').classList.contains('show')) closeAdd();
+});
+
+// ─── 起動 ───
+load();
+initRain();
+render();
+console.log('%c🌧 読雨 v1.0','color:#6bb6ff;font-size:1.2rem;font-weight:900;');
+
+// Gist 初回同期
+YOMU.sync.fetchGist();
+
+// ═══════════════════════════════════════════════════
+// URL クエリで走り書き受信（Claude モバイル等から）
+// ?raw=...&title=...&series=...&site=...&chapter=...&stars=...&url=...&tags=...
+// ═══════════════════════════════════════════════════
+(function handleAddFromURL() {
+  const p = new URLSearchParams(location.search);
+  if (!p.has('raw') && !p.has('add')) return;
+  const stuck = (p.get('raw') || p.get('add') || '').slice(0, 4000);
+  const title = (p.get('title') || '無題').slice(0, 200);
+  const series = (p.get('series') || '').slice(0, 100);
+  const site = (p.get('site') || '').slice(0, 50);
+  const chapter = parseInt(p.get('chapter') || '0', 10) || null;
+  const stars = Math.max(0, Math.min(5, parseInt(p.get('stars') || '0', 10))) || 0;
+  const url = (p.get('url') || '').slice(0, 500);
+  const tags = (p.get('tags') || '').split(',').map(s => s.trim()).filter(Boolean).slice(0, 20);
+  if (!stuck && !title) return;
+  const now = new Date().toISOString();
+  STATE.entries.unshift({
+    id: 'y_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+    title, series: series || undefined, site: site || undefined,
+    chapter: chapter || undefined, url: url || undefined,
+    tags: tags.length ? tags : undefined,
+    stars, stuck, at: now, updatedAt: now,
+    is_draft: true  // URL 経由は必ず走り書き（清書は人間の手のみ・RB 微調整 2）
+  });
+  save();
+  render();
+  YOMU.sync.pushGist();
+  toast('✏ 受信した走り書きを投げました');
+  history.replaceState({}, '', location.pathname);
+})();
+
+// ═══════════════════════════════════════════════════
+// PWA: Service Worker 登録
+// ═══════════════════════════════════════════════════
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
