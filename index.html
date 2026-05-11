@@ -90,6 +90,36 @@ main { max-width: 720px; margin: 0 auto; }
 .entry .quote-ref .quote-label { color: var(--gold); font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.08em; margin-right: 6px; }
 .entry .quote-ref .quote-title-text { color: var(--rain); font-weight: 700; }
 .entry .quote-ref .quote-snippet { display: block; color: var(--muted); margin-top: 4px; opacity: 0.75; }
+
+/* シリーズ別トグル分け */
+.series-group { margin-bottom: 14px; }
+.series-head {
+  display: flex; align-items: center; justify-content: space-between;
+  background: linear-gradient(135deg, rgba(26,36,64,0.55), rgba(19,28,51,0.55));
+  border-left: 3px solid var(--soft);
+  padding: 8px 12px; border-radius: 3px;
+  cursor: pointer; user-select: none;
+  transition: background 0.15s;
+}
+.series-head:hover { background: linear-gradient(135deg, rgba(26,36,64,0.85), rgba(19,28,51,0.85)); }
+.series-head .series-toggle { font-family: var(--mono); font-size: 0.75rem; color: var(--rain); margin-right: 8px; transition: transform 0.2s; }
+.series-head.collapsed .series-toggle { transform: rotate(-90deg); }
+.series-head .series-name { flex: 1; color: var(--white); font-weight: 700; font-size: 0.92rem; }
+.series-head .series-count { font-family: var(--mono); font-size: 0.7rem; color: var(--gold); margin-left: 8px; }
+.series-body { display: flex; flex-direction: column; gap: 10px; padding-top: 10px; }
+.series-head.collapsed + .series-body { display: none; }
+
+.toggle-controls {
+  display: flex; gap: 8px; margin-bottom: 14px;
+  font-size: 0.7rem; color: var(--muted);
+}
+.toggle-controls button {
+  background: transparent; border: 1px solid rgba(107,182,255,0.3);
+  color: var(--rain); font-family: var(--mono); font-size: 0.65rem;
+  padding: 3px 10px; border-radius: 2px; cursor: pointer;
+  letter-spacing: 0.05em;
+}
+.toggle-controls button:hover { background: rgba(107,182,255,0.1); }
 .entry .stage-mark { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; margin-left: 6px; }
 .entry.is-draft .stage-mark { color: var(--muted); }
 .entry.is-final .stage-mark { color: var(--gold); }
@@ -175,7 +205,8 @@ main { max-width: 720px; margin: 0 auto; }
 
   <footer style="margin-top:36px;padding-top:14px;border-top:1px dashed rgba(107,182,255,0.15);text-align:center;font-family:var(--mono);font-size:0.62rem;color:var(--muted);letter-spacing:0.1em;line-height:1.8;">
     読んで、刻む。<br>
-    <a href="https://rainybrainch.github.io/uiki/" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;">もう一本の川 ── UIKI（タスクの水循環）</a>
+    <a href="https://rainybrainch.github.io/uiki/" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:none;">もう一本の川 ── UIKI（タスクの水循環）</a><br>
+    <span style="color:var(--soft);">放流先 ── 服牢365（名言として12支に蒸留・準備中）</span>
   </footer>
 </main>
 
@@ -494,7 +525,36 @@ function render() {
     wrap.innerHTML = '<div class="empty">まだ記録は降っていない。<br>読み終わったものを、3行でも、ここに残してみて。</div>';
     return;
   }
-  wrap.innerHTML = STATE.entries.map(e => {
+  // ─── シリーズ別グループ化（既存順序を保ったまま、初出 series を順に並べる） ───
+  const groups = new Map();
+  for (const e of STATE.entries) {
+    const key = (e.series && e.series.trim()) || '（未分類）';
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(e);
+  }
+  const toggleStates = JSON.parse(localStorage.getItem('yomu_toggle_states') || '{}');
+  wrap.innerHTML = `
+    <div class="toggle-controls">
+      <button onclick="setAllToggles(false)">全て開く</button>
+      <button onclick="setAllToggles(true)">全て閉じる</button>
+    </div>
+    ${[...groups.entries()].map(([series, entries]) => {
+      const collapsed = !!toggleStates[series];
+      const headHtml = `
+        <div class="series-head ${collapsed ? 'collapsed' : ''}" onclick="toggleSeries(this, '${escape(series).replace(/'/g, "\\'")}')">
+          <span class="series-toggle">▼</span>
+          <span class="series-name">${escape(series)}</span>
+          <span class="series-count">${entries.length}件</span>
+        </div>
+      `;
+      const bodyHtml = entries.map(e => buildEntryCard(e)).join('');
+      return `<div class="series-group">${headHtml}<div class="series-body">${bodyHtml}</div></div>`;
+    }).join('')}
+  `;
+}
+
+// エントリカード組み立て（render から分離）
+function buildEntryCard(e) {
     const stars = '★'.repeat(e.stars||0) + '☆'.repeat(5 - (e.stars||0));
     const date = e.at ? new Date(e.at).toLocaleDateString('ja-JP') : '';
     const stuck = escape(e.stuck || '');
@@ -536,8 +596,27 @@ function render() {
         </div>
       </div>
     `;
-  }).join('');
 }
+
+// トグル開閉
+function toggleSeries(headEl, seriesKey) {
+  headEl.classList.toggle('collapsed');
+  const states = JSON.parse(localStorage.getItem('yomu_toggle_states') || '{}');
+  states[seriesKey] = headEl.classList.contains('collapsed');
+  localStorage.setItem('yomu_toggle_states', JSON.stringify(states));
+}
+function setAllToggles(collapsed) {
+  const heads = document.querySelectorAll('.series-head');
+  const states = {};
+  heads.forEach(h => {
+    const name = h.querySelector('.series-name').textContent;
+    if (collapsed) h.classList.add('collapsed');
+    else h.classList.remove('collapsed');
+    states[name] = collapsed;
+  });
+  localStorage.setItem('yomu_toggle_states', JSON.stringify(states));
+}
+
 function escape(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
