@@ -430,16 +430,16 @@ main { max-width: 720px; margin: 0 auto; }
     </div>
 
     <div class="field">
-      <label>七大罪 → 七徳（服牢365 2026 ver）</label>
+      <label>七大罪 → 七徳</label>
       <select id="fq-sv">
         <option value="">（未分類）</option>
-        <option value="傲慢|謙虚|創">月 創 ── 傲慢 → 謙虚（核1 創造）</option>
-        <option value="嫉妬|親切|引">火 引 ── 嫉妬 → 親切（核2 引力）</option>
-        <option value="怠惰|勤勉|凝">水 凝 ── 怠惰 → 勤勉（核3 凝縮）</option>
-        <option value="色欲|純潔|化">木 化 ── 色欲 → 純潔（核4 キメラ）</option>
-        <option value="強欲|慈悲|贈">金 贈 ── 強欲 → 慈悲（核5 利他）</option>
-        <option value="暴食|節制|問">土 問 ── 暴食 → 節制（自問）</option>
-        <option value="憤怒|忍耐|行">日 行 ── 憤怒 → 忍耐（実践）</option>
+        <option value="傲慢|謙虚|創">傲慢 ─→ 謙虚</option>
+        <option value="嫉妬|親切|引">嫉妬 ─→ 親切</option>
+        <option value="怠惰|勤勉|凝">怠惰 ─→ 勤勉</option>
+        <option value="色欲|純潔|化">色欲 ─→ 純潔</option>
+        <option value="強欲|慈悲|贈">強欲 ─→ 慈悲</option>
+        <option value="暴食|節制|問">暴食 ─→ 節制</option>
+        <option value="憤怒|忍耐|行">憤怒 ─→ 忍耐</option>
       </select>
     </div>
 
@@ -965,25 +965,27 @@ function renderQuotes() {
     return;
   }
 
-  // 核別グループ化
+  // 罪 → 徳 ペア別グループ化（七大罪×七徳の7グループ + 未分類）
+  const pairOrder = [
+    '傲慢 ─→ 謙虚',
+    '嫉妬 ─→ 親切',
+    '怠惰 ─→ 勤勉',
+    '色欲 ─→ 純潔',
+    '強欲 ─→ 慈悲',
+    '暴食 ─→ 節制',
+    '憤怒 ─→ 忍耐',
+    '（未分類）'
+  ];
   const groups = new Map();
-  const coreOrder = ['核1 創造性', '核2 重力と引力の物理法則', '核3 内向き凝縮 → 超重力源', '核4 アナログ × デジタルのキメラ', '核5 利他的な愛と大団円', '複合', '（未分類）'];
-  for (const order of coreOrder) groups.set(order, []);
+  for (const order of pairOrder) groups.set(order, []);
 
   for (const q of STATE.quotes) {
-    const core = (q.coreLink || '').trim();
-    // coreLink が「核3 内向き...」のようなフォーマット → 先頭の「核N」で分類
+    const sv = deriveSinVirtue(q);
     let bucket = '（未分類）';
-    if (core) {
-      const m = core.match(/^(核[1-5])/);
-      if (m) {
-        const found = coreOrder.find(c => c.startsWith(m[1]));
-        if (found) bucket = found;
-      } else if (core.includes('複合') || core.includes('×') || core.includes('+')) {
-        bucket = '複合';
-      }
+    if (sv.sin && sv.virtue) {
+      const key = `${sv.sin} ─→ ${sv.virtue}`;
+      if (groups.has(key)) bucket = key;
     }
-    if (!groups.has(bucket)) groups.set(bucket, []);
     groups.get(bucket).push(q);
   }
 
@@ -1043,18 +1045,12 @@ function buildQuoteCard(q) {
   const isDraft = !!q.is_draft;
   const stageMark = isDraft ? ' <span style="color:var(--muted);font-size:0.62rem;">✏ 仮</span>' : '';
 
-  // 服牢365 v2: 罪/徳/state/genre
+  // 服牢365 v2: 罪/徳/state（字は内部識別のみ・UI 非表示）
   const sv = deriveSinVirtue(q);
   const stateClass = sv.state ? 'state-' + sv.state : '';
   const dateStr = q.calendarDate || q.date || '';
-  const genreBadge = sv.genre
-    ? `<span class="q-genre-badge q-genre-${sv.genre}">${sv.genre}</span>`
-    : '';
-  const headerHtml = (dateStr || sv.genre)
-    ? `<div class="q-header">
-         <span class="q-cal">${escape(dateStr)}</span>
-         ${genreBadge}
-       </div>`
+  const headerHtml = dateStr
+    ? `<div class="q-header"><span class="q-cal">${escape(dateStr)}</span></div>`
     : '';
   const sinVirtueHtml = (sv.sin && sv.virtue)
     ? `<div class="sin-virtue">
