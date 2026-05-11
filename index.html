@@ -78,6 +78,18 @@ main { max-width: 720px; margin: 0 auto; }
 .entry:hover { transform: translateX(2px); box-shadow: 0 4px 12px rgba(107,182,255,0.15); }
 .entry.is-draft { opacity: 0.80; border-left-color: var(--rain); }
 .entry.is-final { opacity: 1.00; border-left-color: var(--gold); }
+.entry .quote-ref {
+  background: rgba(201,168,76,0.05);
+  border-left: 2px solid rgba(201,168,76,0.35);
+  padding: 6px 10px; margin-bottom: 8px;
+  font-size: 0.72rem; color: var(--muted);
+  cursor: pointer; transition: background 0.15s; border-radius: 2px;
+  line-height: 1.5;
+}
+.entry .quote-ref:hover { background: rgba(201,168,76,0.10); }
+.entry .quote-ref .quote-label { color: var(--gold); font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.08em; margin-right: 6px; }
+.entry .quote-ref .quote-title-text { color: var(--rain); font-weight: 700; }
+.entry .quote-ref .quote-snippet { display: block; color: var(--muted); margin-top: 4px; opacity: 0.75; }
 .entry .stage-mark { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; margin-left: 6px; }
 .entry.is-draft .stage-mark { color: var(--muted); }
 .entry.is-final .stage-mark { color: var(--gold); }
@@ -498,14 +510,24 @@ function render() {
     const stageMark = isDraft
       ? '<span class="stage-mark" title="走り書き（仮）">✏ 仮</span>'
       : '<span class="stage-mark" title="清書（刻まれた）">⭐ 刻</span>';
+    // 引用ブロック：明示 quotes / 自動マッチ（series+chapter）で親が見つかったら表示
+    const parent = findQuoteTarget(e, STATE.entries);
+    const quoteBlock = parent
+      ? `<div class="quote-ref" onclick="scrollToEntry('${parent.id}')" title="引用元へ">
+           <span class="quote-label">↪ 引用</span>
+           <span class="quote-title-text">${escape(parent.title)}</span>
+           <span class="quote-snippet">${escape((parent.stuck || '').slice(0, 70))}${(parent.stuck || '').length > 70 ? '…' : ''}</span>
+         </div>`
+      : '';
     return `
-      <div class="entry ${isDraft ? 'is-draft' : 'is-final'}">
+      <div class="entry ${isDraft ? 'is-draft' : 'is-final'}" data-eid="${e.id}">
         <div class="entry-head">
           <div class="entry-title">${escape(e.title)}${stageMark}</div>
           <div class="entry-stars">${stars}</div>
         </div>
         <div class="entry-meta">${meta}</div>
         ${tags ? `<div style="margin-bottom:8px;display:flex;flex-wrap:wrap;gap:4px;">${tags}</div>` : ''}
+        ${quoteBlock}
         ${stuck ? `<div class="entry-body">${stuck}</div>` : ''}
         ${analysis ? `<div class="entry-body" style="margin-top:10px;padding-top:8px;border-top:1px dashed rgba(255,255,255,0.06);color:var(--soft);font-size:0.8rem;">${analysis}</div>` : ''}
         <div class="entry-actions">
@@ -518,6 +540,32 @@ function render() {
 }
 function escape(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// ─── 引用先の判定（明示 quotes 優先 / なければ series+chapter で自動マッチ） ───
+function findQuoteTarget(entry, allEntries) {
+  if (entry.quotes) {
+    return allEntries.find(e => e.id === entry.quotes) || null;
+  }
+  if (entry.series && entry.chapter) {
+    const same = allEntries.filter(e =>
+      e.id !== entry.id &&
+      e.series === entry.series &&
+      e.chapter === entry.chapter &&
+      (e.at || '') < (entry.at || '')
+    );
+    same.sort((a, b) => (b.at || '').localeCompare(a.at || ''));
+    return same[0] || null;
+  }
+  return null;
+}
+function scrollToEntry(id) {
+  const el = document.querySelector(`.entry[data-eid="${id}"]`);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.style.outline = '2px solid var(--gold)';
+    setTimeout(() => { el.style.outline = ''; }, 1500);
+  }
 }
 
 // ─── トースト ───
@@ -600,6 +648,7 @@ YOMU.sync.fetchGist();
   const stars = Math.max(0, Math.min(5, parseInt(p.get('stars') || '0', 10))) || 0;
   const url = (p.get('url') || '').slice(0, 500);
   const tags = (p.get('tags') || '').split(',').map(s => s.trim()).filter(Boolean).slice(0, 20);
+  const quotes = (p.get('quotes') || '').slice(0, 100) || null;
   if (!stuck && !title) return;
   const now = new Date().toISOString();
   STATE.entries.unshift({
@@ -608,7 +657,8 @@ YOMU.sync.fetchGist();
     chapter: chapter || undefined, url: url || undefined,
     tags: tags.length ? tags : undefined,
     stars, stuck, at: now, updatedAt: now,
-    is_draft: true  // URL 経由は必ず走り書き（清書は人間の手のみ・RB 微調整 2）
+    is_draft: true,  // URL 経由は必ず走り書き（清書は人間の手のみ・RB 微調整 2）
+    quotes: quotes || null
   });
   save();
   render();

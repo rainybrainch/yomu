@@ -61,8 +61,16 @@ https://rainybrainch.github.io/yomu/?raw=<感想本文をURLエンコード>&tit
 | stars | △ | 評価 1-5 | 5 |
 | url | △ | 原文URL | https://syosetu.org/novel/82997/27.html |
 | tags | △ | タグ（カンマ区切り） | このすば,Elona,仙人 |
+| quotes | △ | 引用元エントリの id（同じ話の追加感想や、別話を引用したいとき） | y_20260511_konosuba_elona_27 |
 
 不明なフィールドは省略可。**raw と title だけあれば動きます**。
+
+### 引用（追加感想）の扱い
+
+- **同じ series + 同じ chapter** のエントリが既にあれば、`quotes` 省略でも **自動で繋がります**（読雨が自動マッチ）
+- **別の話・別シリーズへの引用**をしたいときだけ、`&quotes=<元エントリid>` を明示する
+- 例：第27話の元エントリに対して、第31話を読んだ追加感想を「27話への返信」として繋げたいときは `&quotes=y_20260511_konosuba_elona_27`
+- 引用元エントリは Gist の `https://gist.githubusercontent.com/rainybrainch/cffc5abcf62103b27effe2efba25ca6a/raw/yomu-data.json` を fetch して `id` を確認
 
 ### 応答パターン
 
