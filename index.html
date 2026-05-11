@@ -7,8 +7,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="読雨">
 <link rel="manifest" href="manifest.json">
-<title>🌧 読雨 (YOMU) ── 読書の研究</title>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🌦</text></svg>'>
+<title>🌦 読雨 (YOMU) ── 読書の研究</title>
 <script src="entries.js"></script>
+<script src="quotes.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -46,6 +48,79 @@ main { max-width: 720px; margin: 0 auto; }
 .sync-line[data-state="syncing"] { color: var(--rain); }
 .sync-line[data-state="offline"] { color: var(--soft); }
 .sync-line[data-state="error"]   { color: var(--hp); }
+
+/* ─── タブバー ─── */
+.tab-bar {
+  display: flex; gap: 4px; margin-bottom: 18px;
+  border-bottom: 1px solid rgba(107,182,255,0.15);
+}
+.tab-btn {
+  background: transparent; border: none; color: var(--muted);
+  padding: 10px 16px; font-family: var(--serif); font-size: 0.92rem; font-weight: 700;
+  cursor: pointer; transition: all 0.15s; flex: 1;
+  border-bottom: 2px solid transparent;
+  letter-spacing: 0.05em;
+}
+.tab-btn:hover { color: var(--rain); }
+.tab-btn.active { color: var(--white); border-bottom-color: var(--gold); }
+.tab-btn.active[data-tab="fukurou365"] { border-bottom-color: var(--soft); }
+.tab-page[hidden] { display: none; }
+
+/* ─── 服牢365：核（柱）グループ ─── */
+.core-group { margin-bottom: 14px; }
+.core-head {
+  display: flex; align-items: center; justify-content: space-between;
+  background: linear-gradient(135deg, rgba(200,144,216,0.10), rgba(200,144,216,0.04));
+  border-left: 3px solid var(--soft);
+  padding: 8px 12px; border-radius: 3px;
+  cursor: pointer; user-select: none;
+}
+.core-head:hover { background: linear-gradient(135deg, rgba(200,144,216,0.20), rgba(200,144,216,0.08)); }
+.core-head .core-toggle { font-family: var(--mono); font-size: 0.75rem; color: var(--soft); margin-right: 8px; transition: transform 0.2s; }
+.core-head.collapsed .core-toggle { transform: rotate(-90deg); }
+.core-head .core-name { flex: 1; color: var(--white); font-weight: 700; font-size: 0.92rem; }
+.core-head .core-count { font-family: var(--mono); font-size: 0.7rem; color: var(--soft); margin-left: 8px; }
+.core-body { display: flex; flex-direction: column; gap: 8px; padding-top: 10px; }
+.core-head.collapsed + .core-body { display: none; }
+
+/* ─── 服牢365：名言カード ─── */
+.quote-card {
+  background: linear-gradient(135deg, rgba(26,36,64,0.7), rgba(19,28,51,0.7));
+  border-left: 3px solid var(--soft); border-radius: 4px;
+  padding: 14px;
+}
+.quote-card .q-text {
+  font-family: var(--serif); font-size: 1.0rem; color: var(--white);
+  font-weight: 700; line-height: 1.6;
+  border-left: 2px solid var(--soft); padding-left: 12px; margin-bottom: 10px;
+}
+.quote-card .q-meta {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  font-family: var(--mono); font-size: 0.62rem; color: var(--muted); margin-bottom: 6px;
+}
+.quote-card .q-meta .q-core { color: var(--soft); }
+.quote-card .q-meta .q-char { color: var(--gold); }
+.quote-card .q-explain {
+  font-size: 0.78rem; color: var(--text); line-height: 1.7; opacity: 0.85;
+  border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 8px; margin-top: 6px;
+  white-space: pre-wrap;
+}
+.quote-card .q-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.quote-card .q-tags span {
+  background: rgba(200,144,216,0.12); color: var(--soft);
+  padding: 1px 7px; border-radius: 10px; font-size: 0.58rem; font-family: var(--mono);
+}
+
+.progress-365 {
+  font-family: var(--mono); font-size: 0.7rem; color: var(--soft);
+  margin: 8px 0 14px; text-align: center; letter-spacing: 0.1em;
+}
+.progress-365 .progress-bar {
+  display: inline-block; width: 200px; height: 4px;
+  background: rgba(200,144,216,0.15); border-radius: 2px; margin: 0 8px; vertical-align: middle;
+  position: relative; overflow: hidden;
+}
+.progress-365 .progress-fill { height: 100%; background: var(--soft); transition: width 0.5s; }
 
 /* メタ統計 */
 .meta { display: flex; justify-content: space-around; margin-bottom: 16px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 6px; border: 1px solid rgba(107,182,255,0.15); }
@@ -108,6 +183,25 @@ main { max-width: 720px; margin: 0 auto; }
 .series-head .series-count { font-family: var(--mono); font-size: 0.7rem; color: var(--gold); margin-left: 8px; }
 .series-body { display: flex; flex-direction: column; gap: 10px; padding-top: 10px; }
 .series-head.collapsed + .series-body { display: none; }
+
+/* 話数（chapter）サブトグル */
+.chapter-group { margin-bottom: 8px; margin-left: 12px; }
+.chapter-head {
+  background: linear-gradient(135deg, rgba(20,28,50,0.6), rgba(15,21,38,0.6));
+  border-left: 2px solid var(--rain);
+  padding: 7px 12px; border-radius: 4px;
+  cursor: pointer; user-select: none;
+  display: flex; align-items: center;
+  font-size: 0.78rem;
+  transition: background 0.15s;
+}
+.chapter-head:hover { background: linear-gradient(135deg, rgba(20,28,50,0.85), rgba(15,21,38,0.85)); }
+.chapter-head .chapter-toggle { font-family: var(--mono); font-size: 0.65rem; color: var(--rain); margin-right: 6px; transition: transform 0.2s; }
+.chapter-head.collapsed .chapter-toggle { transform: rotate(-90deg); }
+.chapter-head .chapter-name { flex: 1; color: var(--white); font-weight: 700; }
+.chapter-head .chapter-count { font-family: var(--mono); font-size: 0.62rem; color: var(--gold); margin-left: 6px; }
+.chapter-body { display: flex; flex-direction: column; gap: 8px; padding-top: 8px; padding-left: 6px; }
+.chapter-head.collapsed + .chapter-body { display: none; }
 
 .toggle-controls {
   display: flex; gap: 8px; margin-bottom: 14px;
@@ -188,20 +282,39 @@ main { max-width: 720px; margin: 0 auto; }
 
 <main>
   <div class="head">
-    <div class="title">🌧 読雨</div>
-    <div class="subtitle">YOMU ／ 読書は研究である</div>
+    <div class="title">🌦 読雨 (YOMU)</div>
+    <div class="subtitle">読書は研究である ／ 読んで、刻む</div>
     <div class="sync-line" id="sync-line" data-state="loading">読み込み中…</div>
   </div>
 
-  <div class="meta" id="meta"></div>
+  <nav class="tab-bar" id="tab-bar">
+    <button class="tab-btn active" data-tab="yomu" onclick="switchTab('yomu')">📖 読雨</button>
+    <button class="tab-btn" data-tab="fukurou365" onclick="switchTab('fukurou365')">✒ 服牢365</button>
+  </nav>
 
-  <div class="actions">
-    <button class="btn primary" onclick="openAdd()">＋ 新しい雨を記録</button>
-    <button class="btn small" onclick="exportData()">📤 出力</button>
-    <button class="btn small" onclick="openConfig()">⚙ 設定</button>
+  <!-- ─── タブ1：読雨（読書感想） ─── -->
+  <div class="tab-page" data-tab="yomu">
+    <div class="meta" id="meta"></div>
+
+    <div class="actions">
+      <button class="btn primary" onclick="openAdd()">＋ 新しい雨を記録</button>
+      <button class="btn small" onclick="exportData()">📤 出力</button>
+      <button class="btn small" onclick="openConfig()">⚙ 設定</button>
+    </div>
+
+    <div class="entries" id="entries"></div>
   </div>
 
-  <div class="entries" id="entries"></div>
+  <!-- ─── タブ2：服牢365（名言集） ─── -->
+  <div class="tab-page" data-tab="fukurou365" hidden>
+    <div class="progress-365" id="progress-365"></div>
+
+    <div class="actions">
+      <button class="btn primary" style="border-color:var(--soft);color:var(--soft);" onclick="openQuoteAdd()">＋ 名言を刻む</button>
+    </div>
+
+    <div id="quotes-list"></div>
+  </div>
 
   <footer style="margin-top:36px;padding-top:14px;border-top:1px dashed rgba(107,182,255,0.15);text-align:center;font-family:var(--mono);font-size:0.62rem;color:var(--muted);letter-spacing:0.1em;line-height:1.8;">
     読んで、刻む。<br>
@@ -267,42 +380,108 @@ main { max-width: 720px; margin: 0 auto; }
   </div>
 </div>
 
+<!-- 服牢365 名言追加モーダル -->
+<div class="overlay" id="overlay-quote">
+  <div class="overlay-card">
+    <div class="overlay-title">✒ 名言を刻む</div>
+
+    <div class="field">
+      <label>名言（本文）</label>
+      <textarea id="fq-quote" rows="2" maxlength="200" placeholder="一文で完結する、心に刻む言葉" required></textarea>
+    </div>
+
+    <div class="field">
+      <label>核（柱）── 服牢AI 5本柱との連結</label>
+      <select id="fq-core">
+        <option value="">（未分類）</option>
+        <option value="核1 創造性">核1 ── 創造性</option>
+        <option value="核2 重力と引力の物理法則">核2 ── 重力と引力の物理法則</option>
+        <option value="核3 内向き凝縮 → 超重力源">核3 ── 内向き凝縮 → 超重力源</option>
+        <option value="核4 アナログ × デジタルのキメラ">核4 ── アナログ × デジタルのキメラ</option>
+        <option value="核5 利他的な愛と大団円">核5 ── 利他的な愛と大団円</option>
+        <option value="複合">複合（複数の核にまたがる）</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>出典（任意）</label>
+      <input type="text" id="fq-source" maxlength="120" placeholder="例：このすば × Elona 第27話 / 自問 / etc">
+    </div>
+
+    <div class="field">
+      <label>解説（任意・1〜2文）</label>
+      <textarea id="fq-explain" rows="2" maxlength="500" placeholder="この名言の意味を補足する短い文"></textarea>
+    </div>
+
+    <div class="field">
+      <label>タグ（任意・カンマ区切り）</label>
+      <input type="text" id="fq-tags" maxlength="200" placeholder="仙人, 積み重ね, 二項両立">
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" style="border-color:var(--soft);color:var(--soft);" onclick="saveQuote()">⭐ 刻む</button>
+      <button class="btn" onclick="closeQuoteAdd()">キャンセル</button>
+    </div>
+  </div>
+</div>
+
 <script>
 'use strict';
 // ─── 状態 ───
 const STATE = {
-  entries: [],         // [{id, title, stuck, stars, at, is_draft?, analysis?}]
+  entries: [],         // 読雨：読書感想
+  quotes: [],          // 服牢365：名言（{id, quote, char?, source?, coreLink?, explanation?, date, tags?, is_draft?}）
   editingId: null,
-  formStars: 0
+  formStars: 0,
+  currentTab: 'yomu'
 };
 const KEY = 'yomu_entries';
+const QUOTES_KEY = 'yomu_quotes';
 const PAT_KEY = 'yomu_gist_pat';
 const ETAG_KEY = 'yomu_etag';
+const TAB_KEY = 'yomu_current_tab';
 const GIST_ID = 'cffc5abcf62103b27effe2efba25ca6a';
 
 // ─── 永続化 ───
 function load() {
+  // 読雨：感想
   try {
     STATE.entries = JSON.parse(localStorage.getItem(KEY) || '[]');
   } catch(e) { STATE.entries = []; }
-  // PRESET_ENTRIES（entries.js）から未取り込みのものをマージ
   if (typeof window !== 'undefined' && Array.isArray(window.PRESET_ENTRIES)) {
     const existingIds = new Set(STATE.entries.map(e => e.id));
     for (const p of window.PRESET_ENTRIES) {
-      if (!existingIds.has(p.id)) {
-        // PRESET（entries.js）は analysis を持つ深い記録 → 清書扱い
-        STATE.entries.push({ ...p, is_draft: false });
-      }
+      if (!existingIds.has(p.id)) STATE.entries.push({ ...p, is_draft: false });
     }
   }
-  // is_draft 既定値を補完（既存エントリは清書扱い・後方互換）
   for (const e of STATE.entries) {
     if (typeof e.is_draft === 'undefined') e.is_draft = false;
   }
   STATE.entries.sort((a, b) => (b.at || '').localeCompare(a.at || ''));
+
+  // 服牢365：名言
+  try {
+    STATE.quotes = JSON.parse(localStorage.getItem(QUOTES_KEY) || '[]');
+  } catch(e) { STATE.quotes = []; }
+  if (typeof window !== 'undefined' && Array.isArray(window.QUOTES)) {
+    const existingQIds = new Set(STATE.quotes.map(q => q.id));
+    for (const q of window.QUOTES) {
+      if (!existingQIds.has(q.id)) STATE.quotes.push({ ...q, is_draft: false });
+    }
+  }
+  for (const q of STATE.quotes) {
+    if (typeof q.is_draft === 'undefined') q.is_draft = false;
+  }
+  STATE.quotes.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+  // タブ状態復元
+  STATE.currentTab = localStorage.getItem(TAB_KEY) || 'yomu';
 }
 function save() {
-  try { localStorage.setItem(KEY, JSON.stringify(STATE.entries)); } catch(e){}
+  try {
+    localStorage.setItem(KEY, JSON.stringify(STATE.entries));
+    localStorage.setItem(QUOTES_KEY, JSON.stringify(STATE.quotes));
+  } catch(e){}
 }
 
 // ═══════════════════════════════════════════════════
@@ -343,29 +522,57 @@ YOMU.sync = (() => {
     }
   }
   function mergeRemote(remote) {
-    if (!remote || !Array.isArray(remote.entries)) return;
-    const map = new Map(STATE.entries.map(e => [e.id, e]));
-    let added = 0, updated = 0;
-    for (const r of remote.entries) {
-      if (!r || !r.id) continue;
-      const local = map.get(r.id);
-      if (!local) {
-        STATE.entries.push({ ...r, is_draft: typeof r.is_draft === 'undefined' ? false : r.is_draft });
-        added++;
-      } else {
-        const lU = local.updatedAt || local.at || '';
-        const rU = r.updatedAt || r.at || '';
-        if (rU > lU) {
-          Object.assign(local, r);
-          if (typeof local.is_draft === 'undefined') local.is_draft = false;
-          updated++;
+    if (!remote) return;
+    let added = 0, updated = 0, qAdded = 0, qUpdated = 0;
+
+    // entries（読雨・読書感想）
+    if (Array.isArray(remote.entries)) {
+      const map = new Map(STATE.entries.map(e => [e.id, e]));
+      for (const r of remote.entries) {
+        if (!r || !r.id) continue;
+        const local = map.get(r.id);
+        if (!local) {
+          STATE.entries.push({ ...r, is_draft: typeof r.is_draft === 'undefined' ? false : r.is_draft });
+          added++;
+        } else {
+          const lU = local.updatedAt || local.at || '';
+          const rU = r.updatedAt || r.at || '';
+          if (rU > lU) {
+            Object.assign(local, r);
+            if (typeof local.is_draft === 'undefined') local.is_draft = false;
+            updated++;
+          }
         }
       }
+      STATE.entries.sort((a, b) => (b.at || '').localeCompare(a.at || ''));
     }
-    STATE.entries.sort((a, b) => (b.at || '').localeCompare(a.at || ''));
+
+    // quotes（服牢365・名言）
+    if (Array.isArray(remote.quotes)) {
+      const qmap = new Map(STATE.quotes.map(q => [q.id, q]));
+      for (const r of remote.quotes) {
+        if (!r || !r.id) continue;
+        const local = qmap.get(r.id);
+        if (!local) {
+          STATE.quotes.push({ ...r, is_draft: typeof r.is_draft === 'undefined' ? false : r.is_draft });
+          qAdded++;
+        } else {
+          const lU = local.updatedAt || '';
+          const rU = r.updatedAt || '';
+          if (rU > lU) {
+            Object.assign(local, r);
+            qUpdated++;
+          }
+        }
+      }
+      STATE.quotes.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    }
+
     save();
-    render();
-    if (added || updated) toast(`同期: +${added} 追加 / ${updated} 更新`);
+    if (STATE.currentTab === 'fukurou365') renderQuotes(); else render();
+    if (added || updated || qAdded || qUpdated) {
+      toast(`同期: 読雨+${added}/${updated} 名言+${qAdded}/${qUpdated}`);
+    }
   }
   async function pushGist() {
     const token = pat();
@@ -379,7 +586,8 @@ YOMU.sync = (() => {
             content: JSON.stringify({
               version: 1,
               updatedAt: new Date().toISOString(),
-              entries: STATE.entries
+              entries: STATE.entries,
+              quotes: STATE.quotes
             }, null, 2)
           }
         }
@@ -525,30 +733,55 @@ function render() {
     wrap.innerHTML = '<div class="empty">まだ記録は降っていない。<br>読み終わったものを、3行でも、ここに残してみて。</div>';
     return;
   }
-  // ─── シリーズ別グループ化（既存順序を保ったまま、初出 series を順に並べる） ───
+  // ─── シリーズ → 話数 でネストグループ化 ───
   const groups = new Map();
   for (const e of STATE.entries) {
-    const key = (e.series && e.series.trim()) || '（未分類）';
-    if (!groups.has(key)) groups.set(key, []);
-    groups.get(key).push(e);
+    const skey = (e.series && e.series.trim()) || '（未分類）';
+    const ckey = e.chapter ? `第${e.chapter}話` : '（話数なし）';
+    if (!groups.has(skey)) groups.set(skey, new Map());
+    const chapMap = groups.get(skey);
+    if (!chapMap.has(ckey)) chapMap.set(ckey, []);
+    chapMap.get(ckey).push(e);
   }
   const toggleStates = JSON.parse(localStorage.getItem('yomu_toggle_states') || '{}');
+  const chapterStates = JSON.parse(localStorage.getItem('yomu_chapter_states') || '{}');
   wrap.innerHTML = `
     <div class="toggle-controls">
       <button onclick="setAllToggles(false)">全て開く</button>
       <button onclick="setAllToggles(true)">全て閉じる</button>
+      <button onclick="setAllChapters(false)">話を全開</button>
+      <button onclick="setAllChapters(true)">話を全閉</button>
     </div>
-    ${[...groups.entries()].map(([series, entries]) => {
+    ${[...groups.entries()].map(([series, chapMap]) => {
       const collapsed = !!toggleStates[series];
+      const totalEntries = [...chapMap.values()].reduce((s, arr) => s + arr.length, 0);
       const headHtml = `
         <div class="series-head ${collapsed ? 'collapsed' : ''}" onclick="toggleSeries(this, '${escape(series).replace(/'/g, "\\'")}')">
           <span class="series-toggle">▼</span>
           <span class="series-name">${escape(series)}</span>
-          <span class="series-count">${entries.length}件</span>
+          <span class="series-count">${chapMap.size}話 / ${totalEntries}件</span>
         </div>
       `;
-      const bodyHtml = entries.map(e => buildEntryCard(e)).join('');
-      return `<div class="series-group">${headHtml}<div class="series-body">${bodyHtml}</div></div>`;
+      // 話数を chapter 番号で降順（新しい話が上）に
+      const sortedChaps = [...chapMap.entries()].sort((a, b) => {
+        const na = parseInt(String(a[0]).replace(/[^0-9]/g, ''), 10) || 0;
+        const nb = parseInt(String(b[0]).replace(/[^0-9]/g, ''), 10) || 0;
+        return nb - na;
+      });
+      const chapsHtml = sortedChaps.map(([chapKey, entries]) => {
+        const ckey = `${series}::${chapKey}`;
+        const ccollapsed = chapterStates[ckey] !== false;  // デフォルト閉じる
+        const chapHead = `
+          <div class="chapter-head ${ccollapsed ? 'collapsed' : ''}" onclick="toggleChapter(this, '${escape(ckey).replace(/'/g, "\\'")}')">
+            <span class="chapter-toggle">▼</span>
+            <span class="chapter-name">${escape(chapKey)}</span>
+            <span class="chapter-count">${entries.length}件</span>
+          </div>
+        `;
+        const chapBody = entries.map(e => buildEntryCard(e)).join('');
+        return `<div class="chapter-group">${chapHead}<div class="chapter-body">${chapBody}</div></div>`;
+      }).join('');
+      return `<div class="series-group">${headHtml}<div class="series-body">${chapsHtml}</div></div>`;
     }).join('')}
   `;
 }
@@ -617,8 +850,195 @@ function setAllToggles(collapsed) {
   localStorage.setItem('yomu_toggle_states', JSON.stringify(states));
 }
 
+// 話数トグル開閉
+function toggleChapter(headEl, ckey) {
+  headEl.classList.toggle('collapsed');
+  const states = JSON.parse(localStorage.getItem('yomu_chapter_states') || '{}');
+  // ccollapsed = true で「閉じる」が初期値。開いたら false で記録
+  states[ckey] = headEl.classList.contains('collapsed');
+  localStorage.setItem('yomu_chapter_states', JSON.stringify(states));
+}
+function setAllChapters(collapsed) {
+  const heads = document.querySelectorAll('.chapter-head');
+  const states = JSON.parse(localStorage.getItem('yomu_chapter_states') || '{}');
+  heads.forEach(h => {
+    if (collapsed) h.classList.add('collapsed');
+    else h.classList.remove('collapsed');
+  });
+  // 全state を一括上書き：render 時のキー（series::chapter）で再構成
+  const groups = new Map();
+  for (const e of STATE.entries) {
+    const skey = (e.series && e.series.trim()) || '（未分類）';
+    const ckey = e.chapter ? `第${e.chapter}話` : '（話数なし）';
+    states[`${skey}::${ckey}`] = collapsed;
+    groups.set(`${skey}::${ckey}`, true);
+  }
+  localStorage.setItem('yomu_chapter_states', JSON.stringify(states));
+}
+
 function escape(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// ═══════════════════════════════════════════════════
+// タブ切替（読雨 ⇔ 服牢365）
+// ═══════════════════════════════════════════════════
+function switchTab(name) {
+  STATE.currentTab = name;
+  localStorage.setItem(TAB_KEY, name);
+  document.querySelectorAll('.tab-page').forEach(p => {
+    p.hidden = (p.dataset.tab !== name);
+  });
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === name);
+  });
+  if (name === 'fukurou365') renderQuotes();
+  else render();
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+// ═══════════════════════════════════════════════════
+// 服牢365：名言タブの描画（核別グループ）
+// ═══════════════════════════════════════════════════
+function renderQuotes() {
+  // 進捗バー
+  const total = STATE.quotes.length;
+  const pct = Math.min(100, (total / 365) * 100);
+  document.getElementById('progress-365').innerHTML = `
+    <span>${total}</span> / 365
+    <span class="progress-bar"><span class="progress-fill" style="width:${pct}%;"></span></span>
+    <span>${pct.toFixed(1)}%</span>
+  `;
+
+  const wrap = document.getElementById('quotes-list');
+  if (STATE.quotes.length === 0) {
+    wrap.innerHTML = '<div class="empty">まだ名言は刻まれていない。<br>読雨で書いた感想から、心に残った一文を「刻む」へ。</div>';
+    return;
+  }
+
+  // 核別グループ化
+  const groups = new Map();
+  const coreOrder = ['核1 創造性', '核2 重力と引力の物理法則', '核3 内向き凝縮 → 超重力源', '核4 アナログ × デジタルのキメラ', '核5 利他的な愛と大団円', '複合', '（未分類）'];
+  for (const order of coreOrder) groups.set(order, []);
+
+  for (const q of STATE.quotes) {
+    const core = (q.coreLink || '').trim();
+    // coreLink が「核3 内向き...」のようなフォーマット → 先頭の「核N」で分類
+    let bucket = '（未分類）';
+    if (core) {
+      const m = core.match(/^(核[1-5])/);
+      if (m) {
+        const found = coreOrder.find(c => c.startsWith(m[1]));
+        if (found) bucket = found;
+      } else if (core.includes('複合') || core.includes('×') || core.includes('+')) {
+        bucket = '複合';
+      }
+    }
+    if (!groups.has(bucket)) groups.set(bucket, []);
+    groups.get(bucket).push(q);
+  }
+
+  const toggleStates = JSON.parse(localStorage.getItem('yomu_core_toggle_states') || '{}');
+
+  wrap.innerHTML = `
+    <div class="toggle-controls">
+      <button onclick="setAllCoreToggles(false)">全て開く</button>
+      <button onclick="setAllCoreToggles(true)">全て閉じる</button>
+    </div>
+    ${[...groups.entries()].filter(([_, list]) => list.length > 0).map(([core, list]) => {
+      const collapsed = !!toggleStates[core];
+      return `
+        <div class="core-group">
+          <div class="core-head ${collapsed ? 'collapsed' : ''}" onclick="toggleCore(this, '${escape(core).replace(/'/g, "\\'")}')">
+            <span class="core-toggle">▼</span>
+            <span class="core-name">${escape(core)}</span>
+            <span class="core-count">${list.length}件</span>
+          </div>
+          <div class="core-body">
+            ${list.map(q => buildQuoteCard(q)).join('')}
+          </div>
+        </div>
+      `;
+    }).join('')}
+  `;
+}
+
+function buildQuoteCard(q) {
+  const tags = (q.tags || []).map(t => `<span>#${escape(t)}</span>`).join('');
+  const meta = [];
+  if (q.coreLink) meta.push(`<span class="q-core">${escape(q.coreLink)}</span>`);
+  if (q.char) meta.push(`<span class="q-char">${escape(q.char)}</span>`);
+  if (q.source) meta.push(`<span>${escape(q.source)}</span>`);
+  if (q.date) meta.push(`<span>${escape(q.date)}</span>`);
+  const isDraft = !!q.is_draft;
+  const stageMark = isDraft ? ' <span style="color:var(--muted);font-size:0.62rem;">✏ 仮</span>' : '';
+  return `
+    <div class="quote-card">
+      <div class="q-text">${escape(q.quote || '')}${stageMark}</div>
+      <div class="q-meta">${meta.join('')}</div>
+      ${q.explanation ? `<div class="q-explain">${escape(q.explanation)}</div>` : ''}
+      ${tags ? `<div class="q-tags">${tags}</div>` : ''}
+    </div>
+  `;
+}
+
+function toggleCore(headEl, coreKey) {
+  headEl.classList.toggle('collapsed');
+  const states = JSON.parse(localStorage.getItem('yomu_core_toggle_states') || '{}');
+  states[coreKey] = headEl.classList.contains('collapsed');
+  localStorage.setItem('yomu_core_toggle_states', JSON.stringify(states));
+}
+function setAllCoreToggles(collapsed) {
+  const heads = document.querySelectorAll('.core-head');
+  const states = {};
+  heads.forEach(h => {
+    const name = h.querySelector('.core-name').textContent;
+    if (collapsed) h.classList.add('collapsed');
+    else h.classList.remove('collapsed');
+    states[name] = collapsed;
+  });
+  localStorage.setItem('yomu_core_toggle_states', JSON.stringify(states));
+}
+
+// ═══════════════════════════════════════════════════
+// 服牢365：名言の追加
+// ═══════════════════════════════════════════════════
+function openQuoteAdd() {
+  document.getElementById('fq-quote').value = '';
+  document.getElementById('fq-core').value = '';
+  document.getElementById('fq-source').value = '';
+  document.getElementById('fq-explain').value = '';
+  document.getElementById('fq-tags').value = '';
+  document.getElementById('overlay-quote').classList.add('show');
+  setTimeout(() => document.getElementById('fq-quote').focus(), 100);
+}
+function closeQuoteAdd() {
+  document.getElementById('overlay-quote').classList.remove('show');
+}
+function saveQuote() {
+  const quote = document.getElementById('fq-quote').value.trim();
+  if (!quote) { toast('名言は必須'); return; }
+  const core = document.getElementById('fq-core').value;
+  const source = document.getElementById('fq-source').value.trim();
+  const explanation = document.getElementById('fq-explain').value.trim();
+  const tagsRaw = document.getElementById('fq-tags').value.trim();
+  const tags = tagsRaw ? tagsRaw.split(',').map(s => s.trim()).filter(Boolean).slice(0, 20) : [];
+  const now = new Date().toISOString();
+  const today = now.slice(0, 10);
+  STATE.quotes.unshift({
+    id: 'q_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+    quote, char: null, source: source || undefined,
+    coreLink: core || undefined,
+    explanation: explanation || undefined,
+    date: today, tags: tags.length ? tags : undefined,
+    createdAt: now, updatedAt: now,
+    is_draft: false
+  });
+  save();
+  closeQuoteAdd();
+  renderQuotes();
+  toast('⭐ 刻みました');
+  YOMU.sync.pushGist();
 }
 
 // ─── 引用先の判定（明示 quotes 優先 / なければ series+chapter で自動マッチ） ───
@@ -706,8 +1126,9 @@ document.addEventListener('keydown', (e) => {
 // ─── 起動 ───
 load();
 initRain();
-render();
-console.log('%c🌧 読雨 v1.0','color:#6bb6ff;font-size:1.2rem;font-weight:900;');
+// タブ状態を復元してから対応する render を呼ぶ
+switchTab(STATE.currentTab || 'yomu');
+console.log('%c🌦 読雨 (YOMU) v2.0 + 服牢365','color:#6bb6ff;font-size:1.2rem;font-weight:900;');
 
 // Gist 初回同期
 YOMU.sync.fetchGist();
@@ -716,6 +1137,40 @@ YOMU.sync.fetchGist();
 // URL クエリで走り書き受信（Claude モバイル等から）
 // ?raw=...&title=...&series=...&site=...&chapter=...&stars=...&url=...&tags=...
 // ═══════════════════════════════════════════════════
+// 服牢365 URL受信： ?quote=...&core=...&char=...&source=...&explain=...&tags=...
+(function handleQuoteFromURL() {
+  const p = new URLSearchParams(location.search);
+  if (!p.has('quote')) return;
+  const quote = (p.get('quote') || '').slice(0, 400);
+  if (!quote) return;
+  const coreRaw = (p.get('core') || '').trim();
+  const coreMap = {
+    '1':'核1 創造性', '2':'核2 重力と引力の物理法則', '3':'核3 内向き凝縮 → 超重力源',
+    '4':'核4 アナログ × デジタルのキメラ', '5':'核5 利他的な愛と大団円'
+  };
+  const coreLink = coreMap[coreRaw] || (coreRaw ? coreRaw.slice(0, 100) : null);
+  const char = (p.get('char') || '').slice(0, 30) || null;
+  const source = (p.get('source') || '').slice(0, 200) || null;
+  const explanation = (p.get('explain') || '').slice(0, 800) || null;
+  const tagsRaw = (p.get('tags') || '').trim();
+  const tags = tagsRaw ? tagsRaw.split(',').map(s => s.trim()).filter(Boolean).slice(0, 20) : null;
+  const now = new Date().toISOString();
+  STATE.quotes.unshift({
+    id: 'q_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+    quote, char, source, coreLink, explanation,
+    date: now.slice(0, 10), tags,
+    createdAt: now, updatedAt: now,
+    is_draft: true  // URL 経由は必ず走り書き
+  });
+  save();
+  // 服牢365 タブに切替表示
+  switchTab('fukurou365');
+  YOMU.sync.pushGist();
+  toast('✒ 服牢365 に走り書きの名言を投げました');
+  // ?quote= だけ消す（他のクエリは別の handler が処理）
+  history.replaceState({}, '', location.pathname);
+})();
+
 (function handleAddFromURL() {
   const p = new URLSearchParams(location.search);
   if (!p.has('raw') && !p.has('add')) return;

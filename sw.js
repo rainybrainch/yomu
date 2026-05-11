@@ -1,8 +1,8 @@
 // 読雨 YOMU ── Service Worker
 // network-first for HTML, cache-first for fonts/manifest, no-cache for Gist API.
 
-const CACHE_NAME = 'yomu-v1';
-const PRECACHE = ['./', './index.html', './manifest.json', './entries.js'];
+const CACHE_NAME = 'yomu-v2';
+const PRECACHE = ['./', './index.html', './manifest.json', './entries.js', './quotes.js'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
